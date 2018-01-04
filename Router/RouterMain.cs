@@ -18,7 +18,6 @@ namespace Router
         static int routernumber;
         static string ip = "127.0.0.1";
         static Queue<byte[]> packetQueue = new Queue<byte[]>();
-        static XmlDocument doc;
         static RouterSwitcher switcher;
         static RouterAgent agent;
         static List<String[]> switchTables = new List<string[]>();

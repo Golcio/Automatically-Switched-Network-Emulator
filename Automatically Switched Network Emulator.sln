@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26730.16
+VisualStudioVersion = 15.0.27130.2003
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cable Cloud", "Cable Cloud\Cable Cloud.csproj", "{88618625-FCC1-4F31-81DC-1B4FB8126DE2}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Network Manager", "Network Manager\Network Manager.csproj", "{49C12BFD-7B95-4421-BD14-DD2F5139C889}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Router", "Router\Router.csproj", "{7C610C87-E251-49C0-B0C8-BF402CE3F3B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Control Node", "Control Node\Control Node.csproj", "{306F8244-AA0C-4AA0-93CE-2C6312278BA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{7C610C87-E251-49C0-B0C8-BF402CE3F3B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7C610C87-E251-49C0-B0C8-BF402CE3F3B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7C610C87-E251-49C0-B0C8-BF402CE3F3B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{306F8244-AA0C-4AA0-93CE-2C6312278BA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{306F8244-AA0C-4AA0-93CE-2C6312278BA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{306F8244-AA0C-4AA0-93CE-2C6312278BA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{306F8244-AA0C-4AA0-93CE-2C6312278BA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
