@@ -37,6 +37,12 @@ namespace Control_Node
                 WriteMenu();
             }
             Console.Clear();
+            Start();
+        }
+
+        public static void Start()
+        {
+            Console.Title = "Control Node" + subnetworknumber + 8;
         }
     }
 }
