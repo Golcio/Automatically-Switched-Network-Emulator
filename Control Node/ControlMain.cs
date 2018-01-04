@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Control_Node
@@ -9,6 +10,9 @@ namespace Control_Node
     class ControlMain
     {
         static int subnetworknumber;
+        static string ccport;
+        static string rcport;
+        static Dictionary<String, int> controllers = new Dictionary<String, int>();
         static void Main(string[] args)
         {
             WriteMenu();
@@ -30,7 +34,7 @@ namespace Control_Node
             ConsoleKeyInfo key = Console.ReadKey();
             if (char.IsDigit(key.KeyChar))
             {
-                subnetworknumber = Int32.Parse(key.KeyChar.ToString());
+                subnetworknumber = Int32.Parse(key.KeyChar.ToString()) + 8;
             }
             else
             {
@@ -42,7 +46,32 @@ namespace Control_Node
 
         public static void Start()
         {
-            Console.Title = "Control Node" + subnetworknumber + 8;
+            Console.Title = "Control Node " + subnetworknumber;
+            new ControlParser("controlconfig" + subnetworknumber + ".txt", subnetworknumber, ref ccport, ref rcport, controllers);
+            Thread connectioncontrollerthread = new Thread(() => connectionController());
+            Thread routingcontrollerthread = new Thread(() => routingController());
+            connectioncontrollerthread.Start();
+            routingcontrollerthread.Start();
+        }
+
+        public static void connectionController()
+        {
+
+        }
+
+        public static void routingController()
+        {
+
+        }
+
+        public static void linkResourceManager()
+        {
+
+        }
+
+        public static String GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyy/MM/dd HH:mm:ss:ffff");
         }
     }
 }

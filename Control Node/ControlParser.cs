@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,12 +9,12 @@ namespace Control_Node
 {
     class ControlParser
     {
-        public ControlParser(string filename, int subnetworknumber, ref string ccport, ref string rcport, ref string lrmport)
+        public ControlParser(string filename, int subnetworknumber, ref string ccport, ref string rcport, Dictionary<String,int> controllers)
         {
             try
             {
                 Console.ForegroundColor = ConsoleColor.Gray;
-                Console.WriteLine(Router.RouterMain.GetTimestamp(DateTime.Now) + "\tParsowanie pliku konfiguracyjnego routera nr " + routernumber + "...");
+                Console.WriteLine(Control_Node.ControlMain.GetTimestamp(DateTime.Now) + "\tParsowanie pliku konfiguracyjnego węzła sterowania podsieci nr " + subnetworknumber + "...");
                 var fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read);
                 using (var streamReader = new StreamReader(fileStream, Encoding.UTF8))
                 {
@@ -22,42 +23,39 @@ namespace Control_Node
 
                     while ((line = streamReader.ReadLine()) != null)
                     {
-                        if (line.Equals("address"))
-                            currentParsing = "address";
-                        else if (line.Equals("cloud"))
-                            currentParsing = "cloud";
-                        else if (line.Equals("agent"))
-                            currentParsing = "agent";
-                        else if (line.Equals("manager"))
-                            currentParsing = "manager";
+                        if (line.Equals("CC"))
+                            currentParsing = "CC";
+                        else if (line.Equals("ConnectionControllers"))
+                            currentParsing = "ConnectionControllers";
+                        else if (line.Equals("RC"))
+                            currentParsing = "RC";
                         else
                         {
-                            if (currentParsing.Equals("address"))
+                            if (currentParsing.Equals("CC"))
                             {
-                                port = line;
+                                ccport = line;
                             }
-                            else if (currentParsing.Equals("cloud"))
+                            else if (currentParsing.Equals("ConnectionControllers"))
                             {
-                                cloudport = line;
+                                string[] splitArray = line.Split('_');
+                                controllers.Add(splitArray[0], Int32.Parse(splitArray[1]));
                             }
-                            else if (currentParsing.Equals("agent"))
+                            else if (currentParsing.Equals("RC"))
                             {
-                                agentport = line;
-                            }
-                            else if (currentParsing.Equals("manager"))
-                            {
-                                managerport = line;
+                                rcport = line;
                             }
 
                         }
+
                     }
                 }
-                Console.WriteLine(Router.RouterMain.GetTimestamp(DateTime.Now) + "\tParsowanie pliku zakończone.");
+
+                Console.WriteLine(Control_Node.ControlMain.GetTimestamp(DateTime.Now) + "\tParsowanie pliku zakończone.");
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                Router.RouterMain.WriteMenu();
+                Control_Node.ControlMain.WriteMenu();
             }
         }
     }
