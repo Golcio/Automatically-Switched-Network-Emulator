@@ -44,7 +44,9 @@
   <ItemGroup>
     <Compile Include="ControlMain.cs" />
     <Compile Include="ControlParser.cs" />
+    <Compile Include="NetworkTopology.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RoutingController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -12,6 +12,7 @@ namespace Control_Node
         static int subnetworknumber;
         static string ccport;
         static string rcport;
+        static RoutingController routingController = new RoutingController();
         static Dictionary<String, int> controllers = new Dictionary<String, int>();
         static void Main(string[] args)
         {
@@ -42,29 +43,34 @@ namespace Control_Node
             }
             Console.Clear();
             Start();
+
+            // TYMCZASOWO - TESTOWANKO WYLICZANIA SCIEZKI-------------------------------------
+            Console.WriteLine("Ścieżka z R3.S1/1 do R5.S1/3:");
+            Console.WriteLine(routingController.RouteQuery("R3.S1/1", "R5.S1/3"));
+            //--------------------------------------------------------------------------------
         }
 
         public static void Start()
         {
             Console.Title = "Control Node " + subnetworknumber;
-            new ControlParser("controlconfig" + subnetworknumber + ".txt", subnetworknumber, ref ccport, ref rcport, controllers);
-            Thread connectioncontrollerthread = new Thread(() => connectionController());
-            Thread routingcontrollerthread = new Thread(() => routingController());
+            new ControlParser("controlconfig" + subnetworknumber + ".txt", subnetworknumber, ref ccport, ref rcport, controllers, routingController);
+            Thread connectioncontrollerthread = new Thread(() => ConnectionController());
+            Thread routingcontrollerthread = new Thread(() => RoutingController());
             connectioncontrollerthread.Start();
             routingcontrollerthread.Start();
         }
 
-        public static void connectionController()
+        public static void ConnectionController()
         {
 
         }
 
-        public static void routingController()
+        public static void RoutingController()
         {
 
         }
 
-        public static void linkResourceManager()
+        public static void LinkResourceManager()
         {
 
         }
