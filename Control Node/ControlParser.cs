@@ -76,6 +76,7 @@ namespace Control_Node
                                         lc[3] = kvp.Key;
                                 }
                                 lc[4] = splitArray[2];
+                                Console.WriteLine(lc[1]);
                                 rc.addLinkConnection(lc);
                             }
                         }

@@ -45,8 +45,8 @@ namespace Control_Node
             Start();
 
             // TYMCZASOWO - TESTOWANKO WYLICZANIA SCIEZKI-------------------------------------
-            Console.WriteLine("Ścieżka z R3.S1/1 do R5.S1/3:");
-            Console.WriteLine(routingController.RouteQuery("R3.S1/1", "R5.S1/3"));
+            Console.WriteLine("Ścieżka z R6.S1/1 do R8.S1/3:");
+            Console.WriteLine(routingController.RouteQuery("R6.S1/1", "R8.S1/3"));
             //--------------------------------------------------------------------------------
         }
 

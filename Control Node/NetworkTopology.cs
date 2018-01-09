@@ -14,11 +14,20 @@ namespace Control_Node
 
         public void create()
         {
-            foreach (LinkConnection lc in linkConnections)
+            Console.WriteLine(linkConnections[0].SNPa);
+            try
             {
-                if (!vertices.ContainsKey(lc.SNPa))
-                    vertices.Add(lc.SNPa, new Dictionary<string, int>());
-                vertices[lc.SNPa].Add(lc.SNPb, lc.cost);
+                foreach (LinkConnection lc in linkConnections)
+                {
+                    if (!vertices.ContainsKey(lc.SNPa))
+                        vertices.Add(lc.SNPa, new Dictionary<string, int>());
+                    vertices[lc.SNPa].Add(lc.SNPb, lc.cost);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("TU SIE JEBIE");
+                Console.ReadKey();
             }
         }
         
