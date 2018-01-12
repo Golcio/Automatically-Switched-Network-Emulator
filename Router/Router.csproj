@@ -48,9 +48,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="RouterAgentCC.cs" />
     <Compile Include="RouterConfigParser.cs" />
     <Compile Include="RouterReceiver.cs" />
-    <Compile Include="RouterAgent.cs" />
     <Compile Include="RouterMain.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouterSender.cs" />
@@ -73,6 +73,15 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="config5.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config6.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config7.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="config8.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="router2222.ico" />

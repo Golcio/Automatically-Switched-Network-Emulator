@@ -13,13 +13,12 @@ namespace Router
     {
         static string port;
         static string cloudport;
-        static string agentport;
-        static string managerport;
+        static string ccport;
+        static string higherccport;
         static int routernumber;
         static string ip = "127.0.0.1";
         static Queue<byte[]> packetQueue = new Queue<byte[]>();
         static RouterSwitcher switcher;
-        static RouterAgent agent;
         static List<String[]> switchTables = new List<string[]>();
         static void Main(string[] args)
         {
@@ -39,6 +38,9 @@ namespace Router
             Console.WriteLine(" 3. networkNode3");
             Console.WriteLine(" 4. networkNode4");
             Console.WriteLine(" 5. networkNode5");
+            Console.WriteLine(" 6. networkNode6");
+            Console.WriteLine(" 7. networkNode7");
+            Console.WriteLine(" 8. networkNode8");
             Console.WriteLine(" ----------------");
 
             ConsoleKeyInfo key = Console.ReadKey();
@@ -57,12 +59,9 @@ namespace Router
         private static void StartRouter()
         {
             Console.Title = "networkNode" + routernumber;
-            new RouterConfigParser("config" + routernumber + ".txt", routernumber, ref port, ref cloudport, ref agentport, ref managerport);
+            new RouterConfigParser("config" + routernumber + ".txt", routernumber, ref port, ref cloudport, ref ccport, ref higherccport);
             try
             {
-                agent = new RouterAgent(routernumber, agentport, managerport);
-                Thread agentReceiverThread = new Thread(() => agent.agentReceiver(switchTables));
-                agentReceiverThread.Start();
 
                 RouterSender sender = new RouterSender(ip, cloudport);
                 RouterReceiver receiver = new RouterReceiver(ip, port);

@@ -9,7 +9,7 @@ namespace Router
 {
     class RouterConfigParser
     {
-        public RouterConfigParser(string filename, int routernumber, ref string port, ref string cloudport, ref string agentport, ref string managerport)
+        public RouterConfigParser(string filename, int routernumber, ref string port, ref string cloudport, ref string ccport, ref string higherccport)
         {
             try
             {
@@ -27,10 +27,10 @@ namespace Router
                             currentParsing = "address";
                         else if (line.Equals("cloud"))
                             currentParsing = "cloud";
-                        else if (line.Equals("agent"))
-                            currentParsing = "agent";
-                        else if (line.Equals("manager"))
-                            currentParsing = "manager";
+                        else if (line.Equals("ConnectionControler"))
+                            currentParsing = "ConnectionControler";
+                        else if (line.Equals("higherCC"))
+                            currentParsing = "higherCC";
                         else
                         {
                             if (currentParsing.Equals("address"))
@@ -41,13 +41,13 @@ namespace Router
                             {
                                 cloudport = line;
                             }
-                            else if (currentParsing.Equals("agent"))
+                            else if (currentParsing.Equals("ConnectionControler"))
                             {
-                                agentport = line;
+                                ccport = line;
                             }
-                            else if (currentParsing.Equals("manager"))
+                            else if (currentParsing.Equals("higherCC"))
                             {
-                                managerport = line;
+                                higherccport = line;
                             }
 
                         }
