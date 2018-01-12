@@ -11,26 +11,19 @@ namespace Control_Node
         List<LinkConnection> linkConnections = new List<LinkConnection>();
         Dictionary<string, Dictionary<string, int>> vertices = new Dictionary<string, Dictionary<string, int>>();
         Dictionary<string, List<string>> SNPPs = new Dictionary<string, List<string>>();
+        public Dictionary<string, string> clientsSNPPs = new Dictionary<string, string>();
+        public Dictionary<string, string> outputSNPPs = new Dictionary<string, string>();
 
         public void create()
         {
-            Console.WriteLine(linkConnections[0].SNPa);
-            try
+            foreach (LinkConnection lc in linkConnections)
             {
-                foreach (LinkConnection lc in linkConnections)
-                {
-                    if (!vertices.ContainsKey(lc.SNPa))
-                        vertices.Add(lc.SNPa, new Dictionary<string, int>());
-                    vertices[lc.SNPa].Add(lc.SNPb, lc.cost);
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("TU SIE JEBIE");
-                Console.ReadKey();
+                if (!vertices.ContainsKey(lc.SNPa))
+                    vertices.Add(lc.SNPa, new Dictionary<string, int>());
+                vertices[lc.SNPa].Add(lc.SNPb, lc.cost);
             }
         }
-        
+
         public void addLinkConnection(string[] lc)
         {
             int bandwidth = Int32.Parse(lc[4]);
@@ -131,7 +124,7 @@ namespace Control_Node
                 this.SNPa = SNPa;
                 this.SNPb = SNPb;
                 float cost1 = 1 / (float)bandwidth;
-                cost = (int) (1000*cost1);
+                cost = (int)(1000 * cost1);
             }
         }
     }

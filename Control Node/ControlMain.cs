@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +14,7 @@ namespace Control_Node
         static int subnetworknumber;
         static string ccport;
         static string rcport;
-        static RoutingController routingController = new RoutingController();
+        static RoutingController routingController;
         static Dictionary<String, int> controllers = new Dictionary<String, int>();
         static void Main(string[] args)
         {
@@ -43,16 +45,12 @@ namespace Control_Node
             }
             Console.Clear();
             Start();
-
-            // TYMCZASOWO - TESTOWANKO WYLICZANIA SCIEZKI-------------------------------------
-            Console.WriteLine("Ścieżka z R6.S1/1 do R8.S1/3:");
-            Console.WriteLine(routingController.RouteQuery("R6.S1/1", "R8.S1/3"));
-            //--------------------------------------------------------------------------------
         }
 
         public static void Start()
         {
             Console.Title = "Control Node " + subnetworknumber;
+            routingController = new RoutingController(subnetworknumber.ToString());
             new ControlParser("controlconfig" + subnetworknumber + ".txt", subnetworknumber, ref ccport, ref rcport, controllers, routingController);
             Thread connectioncontrollerthread = new Thread(() => ConnectionController());
             Thread routingcontrollerthread = new Thread(() => RoutingController());
@@ -67,7 +65,37 @@ namespace Control_Node
 
         public static void RoutingController()
         {
+            if (subnetworknumber == 10)
+                routingController.NetworkTopologyIn("11");
+            bool done = false;
+            UdpClient listener = new UdpClient(Int32.Parse(rcport));
+            IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, Int32.Parse(rcport));
+            string received_data;
+            byte[] receive_byte_array;
 
+            try
+            {
+                while (!done)
+                {
+                    receive_byte_array = listener.Receive(ref groupEP);
+                    received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
+                    Console.WriteLine("Otrzymano (RC):  " + received_data);
+                    string[] splitArray = received_data.Split('_');
+                    if (splitArray[0].Equals("NetworkTopologyIn"))
+                    {
+                        routingController.NetworkTopologyOut(splitArray[1]);
+                    }
+                    else if (splitArray[0].Equals("NetworkTopologyOut"))
+                    {
+                        ShortTopology.ShortTopologyResponse(splitArray[2], splitArray[1], routingController);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.ToString());
+            }
+            listener.Close();
         }
 
         public static void LinkResourceManager()

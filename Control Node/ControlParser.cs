@@ -9,7 +9,7 @@ namespace Control_Node
 {
     class ControlParser
     {
-        public ControlParser(string filename, int subnetworknumber, ref string ccport, ref string rcport, Dictionary<String,int> controllers, RoutingController rc)
+        public ControlParser(string filename, int subnetworknumber, ref string ccport, ref string rcport, Dictionary<String, int> controllers, RoutingController rc)
         {
             try
             {
@@ -33,6 +33,10 @@ namespace Control_Node
                             currentParsing = "SNPPs";
                         else if (line.Equals("LinkConnections"))
                             currentParsing = "LinkConnections";
+                        else if (line.Equals("Clients"))
+                            currentParsing = "Clients";
+                        else if (line.Equals("RemoteRCs"))
+                            currentParsing = "RemoteRCs";
                         else
                         {
                             if (currentParsing.Equals("CC"))
@@ -76,8 +80,18 @@ namespace Control_Node
                                         lc[3] = kvp.Key;
                                 }
                                 lc[4] = splitArray[2];
-                                Console.WriteLine(lc[1]);
                                 rc.addLinkConnection(lc);
+                            }
+                            else if (currentParsing.Equals("Clients"))
+                            {
+                                string[] splitArray = line.Split('_');
+                                rc.getClientsSNPPs().Add(splitArray[0], splitArray[1]);
+                            }
+                            else if (currentParsing.Equals("RemoteRCs"))
+                            {
+                                string[] splitArray = line.Split('_');
+                                rc.getRemoteRCsPorts().Add(splitArray[0], splitArray[1]);
+                                rc.getRemoteRCs().Add(splitArray[0], splitArray[2]);
                             }
                         }
 
