@@ -20,7 +20,6 @@ namespace Router
             int currentport2 = BitConverter.ToInt32(currentport, 0);
             int signal = 0;
             recursionSwitch(ref receivedData, switchTables, currentport2, packet, ref signal);
-            Console.WriteLine("signal przed ifem: " + signal);
             if (signal == 0)
             {
                 throw new Exception();
@@ -36,7 +35,6 @@ namespace Router
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(Router.RouterMain.GetTimestamp(DateTime.Now) + "\tUsunięto etykietę nr " + packet.Labels.Pop());
-                    Console.WriteLine("signal pierwszy if w funkcji: " + signal);
                     signal++;
                     recursionSwitch(ref receivedData, switchTables, currentport2, packet, ref signal);
                 }
@@ -50,7 +48,6 @@ namespace Router
                     Console.WriteLine(Router.RouterMain.GetTimestamp(DateTime.Now) + "\tPakiet skierowany na interfejs wyjściowy: " + Int32.Parse(switchTables[i][2]));
                     byte[] intBytes = BitConverter.GetBytes(Int32.Parse(switchTables[i][2]));
                     Array.Copy(intBytes, result, 4);
-                    Console.WriteLine("signal drugi if w funkcji: " + signal);
                     signal++;
                     recursionSwitch(ref receivedData, switchTables, currentport2, packet, ref signal);
                 }
@@ -59,13 +56,8 @@ namespace Router
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(Router.RouterMain.GetTimestamp(DateTime.Now) + "\tDodano etykietę nr " + Int32.Parse(switchTables[i][3]));
                     packet.Labels.Push(Int32.Parse(switchTables[i][3]));
-                    Console.WriteLine("signal trzeci if w funkcji: " + signal);
                     signal++;
                 }
-                //else
-                //{
-                //    signal++;
-                //}
             }
             
             byte[] packetbytes = DTOs.Packet.PacketToByte(packet);
