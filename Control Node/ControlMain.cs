@@ -51,7 +51,7 @@ namespace Control_Node
         {
             Console.Title = "Control Node " + subnetworknumber;
             routingController = new RoutingController(subnetworknumber.ToString());
-            new ControlParser("controlconfig" + subnetworknumber + ".txt", subnetworknumber, ref ccport, ref rcport, controllers, routingController);
+            new ControlParser("controlconfig" + subnetworknumber + ".txt", subnetworknumber, ref ccport, ref rcport, controllers, routingController);           
             Thread connectioncontrollerthread = new Thread(() => ConnectionController());
             Thread routingcontrollerthread = new Thread(() => RoutingController());
             connectioncontrollerthread.Start();
@@ -65,8 +65,10 @@ namespace Control_Node
 
         public static void RoutingController()
         {
-            if (subnetworknumber == 10)
-                routingController.NetworkTopologyIn("11");
+            routingController.setCCport(ccport);
+            Thread initiallyExchangeTopologiesThread = new Thread(() => routingController.initiallyExchangeTopologies());
+            initiallyExchangeTopologiesThread.Start();
+
             bool done = false;
             UdpClient listener = new UdpClient(Int32.Parse(rcport));
             IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, Int32.Parse(rcport));
@@ -79,7 +81,7 @@ namespace Control_Node
                 {
                     receive_byte_array = listener.Receive(ref groupEP);
                     received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
-                    Console.WriteLine("Otrzymano (RC):  " + received_data);
+                    Control_Node.RoutingController.WriteLine("RC: Otrzymano:\t" + received_data);
                     string[] splitArray = received_data.Split('_');
                     if (splitArray[0].Equals("NetworkTopologyIn"))
                     {
@@ -87,7 +89,11 @@ namespace Control_Node
                     }
                     else if (splitArray[0].Equals("NetworkTopologyOut"))
                     {
-                        ShortTopology.ShortTopologyResponse(splitArray[2], splitArray[1], routingController);
+                        ShortTopology.ShortTopologyParse(splitArray[2], splitArray[1], routingController);
+                    }
+                    else if (splitArray[0].Equals("RouteQuery"))
+                    {
+                        routingController.RouteQuery(splitArray[1], splitArray[2]);
                     }
                 }
             }

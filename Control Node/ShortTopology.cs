@@ -28,7 +28,7 @@ namespace Control_Node
             return sb.ToString();
         }
 
-        public static void ShortTopologyResponse(string response, string SNPid, RoutingController rc)
+        public static void ShortTopologyParse(string response, string SNPid, RoutingController rc)
         {
             RemoteTopology.Topology topology = new RemoteTopology.Topology();
             string[] array1 = response.Split('&');

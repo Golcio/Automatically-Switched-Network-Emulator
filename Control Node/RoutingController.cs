@@ -14,10 +14,16 @@ namespace Control_Node
         public RemoteTopology remoteTopology = new RemoteTopology();
         Dictionary<string, string> remoteRCsPorts = new Dictionary<string, string>();
         string subnetworknumber;
+        string ccport;
 
         public RoutingController(string id)
         {
             subnetworknumber = id;
+        }
+
+        public void setCCport(string ccport)
+        {
+            this.ccport = ccport;
         }
 
         public void createTopology()
@@ -50,7 +56,16 @@ namespace Control_Node
             return remoteRCsPorts;
         }
 
-        public string RouteQuery(string pathStart, string pathEnd)
+        public void initiallyExchangeTopologies()
+        {
+            foreach (KeyValuePair<string, string> kvp in remoteRCsPorts)
+            {
+                NetworkTopologyIn(kvp.Key);
+                NetworkTopologyOut(kvp.Key);
+            }
+        }
+
+        public void RouteQuery(string pathStart, string pathEnd)
         {
             string SNPa = null;
             string SNPb = null;
@@ -62,6 +77,7 @@ namespace Control_Node
                     SNPb = kvp.Key;
             }
             StringBuilder sb = new StringBuilder();
+            sb.Append("RouteQeury_");
             sb.Append(SNPa + ":");
             sb.Append(pathStart + ",");
             List<string> tempRoute = localTopology.shortest_path(SNPa, SNPb);
@@ -73,12 +89,13 @@ namespace Control_Node
                     foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
                     {
                         if (kvp.Value.Contains(pair[1]))
-                            sb.Append("_" + kvp.Key + ":");
+                            sb.Append(";" + kvp.Key + ":");
                     }
                     sb.Append(pair[1] + ",");
                 }
             sb.Append(pathEnd);
-            return sb.ToString();
+            string output = sb.ToString();
+            Send(output, ccport);
         }
 
         public void LocalTopologyIn()
@@ -115,12 +132,12 @@ namespace Control_Node
             Send(sb.ToString(), remoteRCsPorts[SNPid]);
         }
 
-        public void Send(String message, String source)
+        public void Send(String message, String destination)
         {
             Boolean exception_thrown = false;
             Socket sending_socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             IPAddress send_to_address = IPAddress.Parse("127.0.0.1");
-            IPEndPoint sending_end_point = new IPEndPoint(send_to_address, Int32.Parse(source));
+            IPEndPoint sending_end_point = new IPEndPoint(send_to_address, Int32.Parse(destination));
             byte[] send_buffer = Encoding.ASCII.GetBytes(message);
 
             try
@@ -133,13 +150,24 @@ namespace Control_Node
             }
             if (exception_thrown == false)
             {
-                Console.WriteLine("Wysłano (RC):    " + message);
+                WriteLine("RC: Wysłano:\t" + message);
             }
             else
             {
                 exception_thrown = false;
-                Console.WriteLine("Message failed to send.");
+                WriteLine("RC:\tNie udało się wysłać żądania");
             }
+        }
+        
+        public static void WriteLine(String text)
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(GetTimestamp(DateTime.Now) + "\t" + text);
+        }
+
+        public static String GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyy/MM/dd HH:mm:ss:ffff");
         }
     }
 }
