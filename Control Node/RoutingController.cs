@@ -67,35 +67,108 @@ namespace Control_Node
 
         public void RouteQuery(string pathStart, string pathEnd)
         {
-            string SNPa = null;
-            string SNPb = null;
-            foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
-            {
-                if (kvp.Value.Contains(pathStart))
-                    SNPa = kvp.Key;
-                if (kvp.Value.Contains(pathEnd))
-                    SNPb = kvp.Key;
-            }
-            StringBuilder sb = new StringBuilder();
-            sb.Append("RouteQeury_");
-            sb.Append(SNPa + ":");
-            sb.Append(pathStart + ",");
-            List<string> tempRoute = localTopology.shortest_path(SNPa, SNPb);
-            if (tempRoute.Count > 1)
-                for (int i = 0; i < tempRoute.Count - 1; i++)
+            StringBuilder remotesb = new StringBuilder();
+            bool ifRemoteClient = false;
+            string remoteAS = null;
+            foreach (KeyValuePair<string, RemoteTopology.Topology> kvp in remoteTopology.topologies)
+                foreach (KeyValuePair<string, string> kvp2 in kvp.Value.clientsSNPPs)
                 {
-                    string[] pair = localTopology.getSNPPsPair(tempRoute[i], tempRoute[i + 1]);
-                    sb.Append(pair[0]);
-                    foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
+                    if (kvp2.Value.Equals(pathEnd))
                     {
-                        if (kvp.Value.Contains(pair[1]))
-                            sb.Append(";" + kvp.Key + ":");
+                        remoteAS = kvp.Key;
+                        remotesb.Append(";" + kvp.Key + ":");
+                        remotesb.Append(kvp.Value.inputSNPP + "," + pathEnd);
+                        ifRemoteClient = true;
                     }
-                    sb.Append(pair[1] + ",");
                 }
-            sb.Append(pathEnd);
-            string output = sb.ToString();
-            Send(output, ccport);
+            if (ifRemoteClient == false)
+            {
+                string SNPa = null;
+                string SNPb = null;
+                foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
+                {
+                    if (kvp.Value.Contains(pathStart))
+                        SNPa = kvp.Key;
+                    if (kvp.Value.Contains(pathEnd))
+                        SNPb = kvp.Key;
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.Append("RouteQeury_");
+                sb.Append(SNPa + ":");
+                sb.Append(pathStart + ",");
+                List<string> tempRoute;
+                string output = null;
+                try
+                {
+                    tempRoute = localTopology.shortest_path(SNPa, SNPb);
+                    if (tempRoute.Count > 1)
+                        for (int i = 0; i < tempRoute.Count - 1; i++)
+                        {
+                            string[] pair = localTopology.getSNPPsPair(tempRoute[i], tempRoute[i + 1]);
+                            sb.Append(pair[0]);
+                            foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
+                            {
+                                if (kvp.Value.Contains(pair[1]))
+                                    sb.Append(";" + kvp.Key + ":");
+                            }
+                            sb.Append(pair[1] + ",");
+                        }
+                    sb.Append(pathEnd);
+                    output = sb.ToString();
+                    Send(output, ccport);
+                }
+                catch (Exception e)
+                {
+                    WriteLine("RC:\t\tBrak ścieżki");
+                    output = "RouteQuery_NOPATH";
+                    Send(output, ccport);
+                }
+            }
+            else
+            {
+                string SNPa = null;
+                string SNPb = null;
+                string ASend = localTopology.outputSNPPs[remoteAS];
+                foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
+                {
+                    if (kvp.Value.Contains(pathStart))
+                        SNPa = kvp.Key;
+                    if (kvp.Value.Contains(ASend))
+                        SNPb = kvp.Key;
+                }
+                StringBuilder sb = new StringBuilder();
+                sb.Append("RouteQeury_");
+                sb.Append(SNPa + ":");
+                sb.Append(pathStart + ",");
+                List<string> tempRoute;
+                string output = null;
+                try
+                {
+                    tempRoute = localTopology.shortest_path(SNPa, SNPb);
+                    if (tempRoute.Count > 1)
+                        for (int i = 0; i < tempRoute.Count - 1; i++)
+                        {
+                            string[] pair = localTopology.getSNPPsPair(tempRoute[i], tempRoute[i + 1]);
+                            sb.Append(pair[0]);
+                            foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
+                            {
+                                if (kvp.Value.Contains(pair[1]))
+                                    sb.Append(";" + kvp.Key + ":");
+                            }
+                            sb.Append(pair[1] + ",");
+                        }
+                    sb.Append(ASend);
+                    sb.Append(remotesb.ToString());
+                    output = sb.ToString();
+                    Send(output, ccport);
+                }
+                catch (Exception e)
+                {
+                    WriteLine("RC:\t\tBrak ścieżki");
+                    output = "RouteQuery_NOPATH";
+                    Send(output, ccport);
+                }
+            }
         }
 
         public void LocalTopologyIn()
