@@ -58,6 +58,9 @@ namespace Router
 
         private static void StartRouter()
         {
+            //////////////////////////////SPRAWDZANIE CZY DZIAŁA LRM/////////////////////////////////////
+            Router.RouterAgentLRM.LRMStart("LinkConnectionRequest_R5.S1/1,14,R5.S1/3,88", switchTables);
+            /////////////////////////////////////////////////////////////////////////////////////////////
             Console.Title = "networkNode" + routernumber;
             new RouterConfigParser("config" + routernumber + ".txt", routernumber, ref port, ref cloudport, ref ccport, ref higherccport);
             try
@@ -78,6 +81,11 @@ namespace Router
         public static String GetTimestamp(DateTime value)
         {
             return value.ToString("yyyy/MM/dd HH:mm:ss:ffff");
+        }
+
+        public static void WriteLine(String text)
+        {
+            Console.WriteLine(GetTimestamp(DateTime.Now) + "\t" + text);
         }
     }
 }

@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="RouterAgentCC.cs" />
+    <Compile Include="RouterAgentLRM.cs" />
     <Compile Include="RouterConfigParser.cs" />
     <Compile Include="RouterReceiver.cs" />
     <Compile Include="RouterMain.cs" />

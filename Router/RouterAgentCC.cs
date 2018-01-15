@@ -8,7 +8,7 @@ namespace Router
 {
     class RouterAgentCC
     {
-        public RouterAgentCC(int routernumber, string ccport, string higherccport)
+        public RouterAgentCC(int routernumber, string ccport, string higherccport, List<String[]> switchTables)
         {
 
         }
