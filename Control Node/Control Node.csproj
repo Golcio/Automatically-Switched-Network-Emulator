@@ -42,6 +42,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ConnectionController.cs" />
     <Compile Include="ControlMain.cs" />
     <Compile Include="ControlParser.cs" />
     <Compile Include="NetworkTopology.cs" />
