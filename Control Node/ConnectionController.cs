@@ -11,6 +11,7 @@ namespace Control_Node
 {
     class ConnectionController
     {
+        bool routerCC;
         int udpListenPort = 11002;
         Stack<string> Buffor = new Stack<string>();
         Dictionary<string, string> children = new Dictionary<string, string>();
@@ -59,7 +60,10 @@ namespace Control_Node
                             break;
                         case "ConnectionRequest":
                             Console.WriteLine("Otrzymano ConnectionRequest.");
-                            RouteTableQuery(restMessage);
+                            if (routerCC)
+                                RouteTableQuery(restMessage);
+                            else
+                                LinkConnectionRequest(restMessage);
                             break;
                         case "RouteQuery":
                             Console.WriteLine("Otrzymano RouteQuery.");
@@ -68,14 +72,12 @@ namespace Control_Node
                         case "PeerCoordination":
                             Console.WriteLine("Otrzymano PeerCoordination.");
                             break;
-                        case "xd":
-                            ConnectionRequest(restMessage);
-                            break;
                     }
                 }
             }
         }
 
+        //RC zestaw mi połączenie pomiędzy tymi dwoma punktami: w wiadomości przekazywane są dwa punkty.
         void RouteTableQuery(string routeQuery)
         {
             var client = new UdpClient();
@@ -87,6 +89,8 @@ namespace Control_Node
             Console.WriteLine("Otrzymano potwierdzenie wysłania RouteQuery. ");
         }
 
+        //Jeżeli CC jest CC routerowym to wtedy ConnectionRequest przesyłane jest do LRMa, 
+        //który ma za zadanie zestawić połączenie.
         void LinkConnectionRequest(string linkRequest)
         {
             var client = new UdpClient();
@@ -95,9 +99,11 @@ namespace Control_Node
             string message = "LinkConnectionRequest_" + linkRequest;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
             var receivedData = client.Receive(ref point);
-            Console.WriteLine("Otrzymano potwierdzenie wysłania LinkConnectionRequest. ");
+            Console.WriteLine("Otrzymano potwierdzenie wysłania LinkConnectionRequest.");
         }
 
+        //Wysyłanie wiadomosci "elo ziom, zarządzam podsiecią nr "subnetworkNumber", 
+        //a ty zarządzasz mną. Jak coś to siędzę na tym porcie, elo pis joł
         void FamilyTies(string subnetworkNumber)
         {
             var client = new UdpClient();
@@ -110,6 +116,10 @@ namespace Control_Node
             
         }
 
+        //w momencie, gdy dostaniemy wiadomość od RC z podsieciami pomiędzy którymi 
+        //będzie przebiegało połączenie wysyłamy do nich żądanie zestawienia połączenia ConnectionRequest.
+        //Funkcja analizuje wiadomość: jakie sieci biorą udział w połączeniu, jakie podsieci powiadomić.
+        //Wysyła do nich ConnectionRequest.
         void ConnectionRequest(string message)
         {
             string[] oneSplitMessage = message.Split(';'), splitArray;
