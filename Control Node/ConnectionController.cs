@@ -11,12 +11,18 @@ namespace Control_Node
 {
     class ConnectionController
     {
+        //routerCC = TRUE -> CC jest w routerze
         bool routerCC;
+        //nr portu na którym słucha CC
         int udpListenPort = 11002;
+        //Buffor wiadommości, które przychodzą na powyższy port
         Stack<string> Buffor = new Stack<string>();
+        //komponenty CC, którymi zarządza dany CC, key to numer podsieci, którą zarządza CCdziecko,
+        //value to numer portu tego dziecka.
         Dictionary<string, string> children = new Dictionary<string, string>();
         public ConnectionController()
         {
+            //dwa podstawowe wątki, czyli odbieranie żądań i analizowanie ich.
             Thread receiveThread = new Thread(() => receiving());
             receiveThread.Start();
             Thread analizeThread = new Thread(() => analizing());
@@ -47,6 +53,9 @@ namespace Control_Node
             {
                 if (Buffor.Count > 0)
                 {
+                    //Wiadomość wygląda następująco: "messageType_restMessage#remoteIP;remotePort
+                    //Interesujące nas elementy to: messageType, restMessage oraz remotePort
+                    //remoteIP nie jest potrzebne ze względu na to, że wszystkie komponenty mają ten sam adres IP.
                     string message = Buffor.Pop();
                     string[] oneSplitMessage = message.Split('_'), secondSplitMessage = oneSplitMessage[1].Split('#');
                     string messageType = oneSplitMessage[0];
