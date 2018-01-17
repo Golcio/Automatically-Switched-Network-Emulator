@@ -6,3 +6,17 @@ ConnectionControler
 14107
 higherCC
 14111
+lrm
+14507
+lrmtolrm
+14607
+nextlrms
+R7.S1/1_14506
+R7.S1/2_0
+R7.S1/3_14508
+labelpool
+31
+32
+33
+34
+35

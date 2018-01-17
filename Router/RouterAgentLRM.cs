@@ -19,13 +19,17 @@ namespace Router
         static Dictionary<string, string> nextlrms;
         static List<string> labelpool;
         static Random rnd = new Random();
+        static string lrmtolrmport;
+        static string ccport;
 
-        public RouterAgentLRM(string lrmport, string lrmtolrmport, Dictionary<string, string> nextlrms, List<string> labelpool)
+        public RouterAgentLRM(string lrmport, string lrmtolrmport, string ccport, Dictionary<string, string> nextlrms, List<string> labelpool)
         {
+            RouterAgentLRM.lrmtolrmport = lrmtolrmport;
+            RouterAgentLRM.ccport = ccport;
             listener = new UdpClient(Int32.Parse(lrmport));
             groupEP = new IPEndPoint(IPAddress.Any, Int32.Parse(lrmport));
-            listener2 = new UdpClient(Int32.Parse(lrmport));
-            groupEP2 = new IPEndPoint(IPAddress.Any, Int32.Parse(lrmport));
+            listener2 = new UdpClient(Int32.Parse(lrmtolrmport));
+            groupEP2 = new IPEndPoint(IPAddress.Any, Int32.Parse(lrmtolrmport));
             sender = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             RouterAgentLRM.nextlrms = new Dictionary<string, string>(nextlrms);
             RouterAgentLRM.labelpool = new List<string>(labelpool);
@@ -52,10 +56,15 @@ namespace Router
                     //wiadomość od CC
                     if (splitArray[0].Equals("LinkConnectionRequest"))
                     {
-                        returnvalues = LinkConnectionRequest(splitArray[1], switchTables, labelpool, nextlrms);
-                        label2 = returnvalues[0];
-                        port1 = returnvalues[1];
-                        port2 = returnvalues[2];
+                        Thread lkr = new Thread(() =>
+                        {
+                            returnvalues = LinkConnectionRequest(splitArray[1], switchTables, labelpool, nextlrms);
+                            label2 = returnvalues[0];
+                            port1 = returnvalues[1];
+                            port2 = returnvalues[2];
+                        });
+
+                        lkr.Start();
                     }
                     //wiadomośc od CC (jeszcze nie gotowe)
                     else if (splitArray[0].Equals("LinkConnectionDeallocation"))
@@ -65,6 +74,7 @@ namespace Router
                     //wiadomośc od wcześniejszego LRMa
                     else if (splitArray[0].Equals("LinkConnection"))
                     {
+                        Send("LinkConnectionConfirmation", splitArray[2]);
                         label1 = splitArray[1];
                     }
                     //warunek pozwalający zestawić połączenie czyli dodać linijkę do tablicy komutacji
@@ -75,6 +85,7 @@ namespace Router
                         label2 = null;
                         port1 = null;
                         port2 = null;
+                        Send("LinkConnectionRequestConfirm", ccport);
                     }
                 }
             }
@@ -102,7 +113,12 @@ namespace Router
             string[] returnvalues = { label2, port1, port2 };
             if (nextlrm != null)
             {
-                Send("LinkConnection_" + label2, nextlrm);
+                Send("LinkConnection_" + label2 + "_" + lrmtolrmport, nextlrm);
+                string received_data;
+                byte[] receive_byte_array;
+                receive_byte_array = listener2.Receive(ref groupEP2);
+                received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
+                Router.RouterMain.WriteLine("LRM: Otrzymano potwierdzenie:\t" + received_data);
             }
             return returnvalues;
         }
