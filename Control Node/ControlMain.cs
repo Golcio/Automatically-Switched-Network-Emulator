@@ -96,6 +96,10 @@ namespace Control_Node
                     {
                         routingController.RouteQuery(splitArray[1], splitArray[2]);
                     }
+                    else if (splitArray[0].Equals("LocalTopology"))
+                    {
+                        routingController.LocalTopology(splitArray[1], splitArray[2], splitArray[3]);
+                    }
                 }
             }
             catch (Exception e)
