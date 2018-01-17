@@ -62,6 +62,10 @@ namespace Router
                             label2 = returnvalues[0];
                             port1 = returnvalues[1];
                             port2 = returnvalues[2];
+                            if(returnvalues.Length == 4)
+                            {
+                                label1 = returnvalues[3];
+                            }
                         });
 
                         lkr.Start();
@@ -78,7 +82,7 @@ namespace Router
                         label1 = splitArray[1];
                     }
                     //warunek pozwalający zestawić połączenie czyli dodać linijkę do tablicy komutacji
-                    if(label1 != null && label2 != null)
+                    if (label1 != null && label2 != null)
                     {
                         LinkConnection(port1, label1, port2, label2, switchTables);
                         label1 = null;
@@ -97,6 +101,7 @@ namespace Router
 
         private static string[] LinkConnectionRequest(string points, List<String[]> switchTables, List<string> labelpool, Dictionary<string, string> nextlrms)
         {
+            string label1 = null;
             string nextlrm = null;
             string[] splitarray = points.Split(',');
             foreach (KeyValuePair<string, string> kvp in nextlrms)
@@ -104,13 +109,28 @@ namespace Router
                 if (kvp.Key == splitarray[1])
                 {
                     nextlrm = kvp.Value;
+
+                }
+
+                if (kvp.Key == splitarray[0] && kvp.Value == "0")
+                {
+                    label1 = "0";
                 }
             }
             int r = rnd.Next(labelpool.Count);
             string label2 = labelpool[r];
             string port1 = splitarray[0].Split('/')[1];
             string port2 = splitarray[1].Split('/')[1];
-            string[] returnvalues = { label2, port1, port2 };
+            string[] returnvalues;
+            if (label1 == null)
+            {
+                returnvalues = new string[] { label2, port1, port2 };
+            }
+            else
+            {
+                returnvalues = new string[] { label2, port1, port2, label1 };
+            }
+
             if (nextlrm != null)
             {
                 Send("LinkConnection_" + label2 + "_" + lrmtolrmport, nextlrm);
