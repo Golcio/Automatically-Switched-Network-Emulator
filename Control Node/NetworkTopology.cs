@@ -24,6 +24,21 @@ namespace Control_Node
             }
         }
 
+        public void updateLinkConnection(string SNPPa, string SNPPb, string cost)
+        {
+            string SNPa = null;
+            string SNPb = null;
+            foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
+            {
+                if (kvp.Value.Contains(SNPPa))
+                    SNPa = kvp.Key;
+                if (kvp.Value.Contains(SNPPb))
+                    SNPb = kvp.Key;
+            }
+
+            vertices[SNPa][SNPb] = Int32.Parse(cost);
+        }
+
         public void addLinkConnection(string[] lc)
         {
             int bandwidth = Int32.Parse(lc[4]);

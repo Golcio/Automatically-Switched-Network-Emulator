@@ -20,6 +20,10 @@ namespace Router
         static Queue<byte[]> packetQueue = new Queue<byte[]>();
         static RouterSwitcher switcher;
         static List<String[]> switchTables = new List<string[]>();
+        static string lrmport;
+        static string lrmtolrmport;
+        static Dictionary<string, string> nextlrms = new Dictionary<string, string>();
+        static List<string> labelpool = new List<string>();
         static void Main(string[] args)
         {
             WriteMenu();
@@ -58,11 +62,9 @@ namespace Router
 
         private static void StartRouter()
         {
-            //////////////////////////////SPRAWDZANIE CZY DZIAŁA LRM/////////////////////////////////////
-            Router.RouterAgentLRM.LRMStart("LinkConnectionRequest_R5.S1/1,14,R5.S1/3,88", switchTables);
-            /////////////////////////////////////////////////////////////////////////////////////////////
             Console.Title = "networkNode" + routernumber;
-            new RouterConfigParser("config" + routernumber + ".txt", routernumber, ref port, ref cloudport, ref ccport, ref higherccport);
+            new RouterConfigParser("config" + routernumber + ".txt", routernumber, ref port, ref cloudport, ref ccport, ref higherccport, ref lrmport, ref lrmtolrmport, nextlrms, labelpool);
+            new RouterAgentLRM(lrmport, lrmtolrmport, ccport, nextlrms, labelpool);
             try
             {
 

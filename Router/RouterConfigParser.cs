@@ -9,7 +9,7 @@ namespace Router
 {
     class RouterConfigParser
     {
-        public RouterConfigParser(string filename, int routernumber, ref string port, ref string cloudport, ref string ccport, ref string higherccport)
+        public RouterConfigParser(string filename, int routernumber, ref string port, ref string cloudport, ref string ccport, ref string higherccport, ref string lrmport, ref string lrmtolrmport, Dictionary<string, string> nextlrms, List<string> labelpool)
         {
             try
             {
@@ -31,6 +31,14 @@ namespace Router
                             currentParsing = "ConnectionControler";
                         else if (line.Equals("higherCC"))
                             currentParsing = "higherCC";
+                        else if (line.Equals("lrm"))
+                            currentParsing = "lrm";
+                        else if (line.Equals("lrmtolrm"))
+                            currentParsing = "lrmtolrm";
+                        else if (line.Equals("nextlrms"))
+                            currentParsing = "nextlrms";
+                        else if (line.Equals("labelpool"))
+                            currentParsing = "labelpool";
                         else
                         {
                             if (currentParsing.Equals("address"))
@@ -48,6 +56,23 @@ namespace Router
                             else if (currentParsing.Equals("higherCC"))
                             {
                                 higherccport = line;
+                            }
+                            else if (currentParsing.Equals("lrm"))
+                            {
+                                lrmport = line;
+                            }
+                            else if (currentParsing.Equals("lrmtolrm"))
+                            {
+                                lrmtolrmport = line;
+                            }
+                            else if (currentParsing.Equals("nextlrms"))
+                            {
+                                string[] splitarray = line.Split('_');
+                                nextlrms.Add(splitarray[0], splitarray[1]);
+                            }
+                            else if (currentParsing.Equals("labelpool"))
+                            {
+                                labelpool.Add(line);
                             }
 
                         }

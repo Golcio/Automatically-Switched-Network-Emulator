@@ -14,6 +14,7 @@ namespace Control_Node
         static int subnetworknumber;
         static string ccport;
         static string rcport;
+        static string lrmport;
         static RoutingController routingController;
         static Dictionary<String, int> controllers = new Dictionary<String, int>();
         static void Main(string[] args)
@@ -94,6 +95,10 @@ namespace Control_Node
                     else if (splitArray[0].Equals("RouteQuery"))
                     {
                         routingController.RouteQuery(splitArray[1], splitArray[2]);
+                    }
+                    else if (splitArray[0].Equals("LocalTopology"))
+                    {
+                        routingController.LocalTopology(splitArray[1], splitArray[2], splitArray[3]);
                     }
                 }
             }
