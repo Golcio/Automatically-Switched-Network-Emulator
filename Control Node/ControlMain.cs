@@ -14,6 +14,7 @@ namespace Control_Node
         static int subnetworknumber;
         static string ccport;
         static string rcport;
+        static string lrmport;
         static RoutingController routingController;
         static Dictionary<String, int> controllers = new Dictionary<String, int>();
         static void Main(string[] args)
