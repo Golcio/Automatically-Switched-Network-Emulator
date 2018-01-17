@@ -171,10 +171,11 @@ namespace Control_Node
             }
         }
 
-        public void LocalTopologyIn()
+        public void LocalTopology(string SNPPa, string SNPPb, string cost)
         {
-
+            localTopology.updateLinkConnection(SNPPa, SNPPb, cost);
         }
+        
 
         public void NetworkTopologyIn(string SNPid)
         {
@@ -182,11 +183,6 @@ namespace Control_Node
         }
 
         public void RemoteTopologyIn()
-        {
-            
-        }
-
-        public void LocalTopologyOut()
         {
             
         }
