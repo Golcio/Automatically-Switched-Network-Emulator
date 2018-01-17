@@ -20,6 +20,7 @@ namespace Control_Node
         //komponenty CC, którymi zarządza dany CC, key to numer podsieci, którą zarządza CCdziecko,
         //value to numer portu tego dziecka.
         Dictionary<string, string> children = new Dictionary<string, string>();
+        Dictionary<string, string> partners = new Dictionary<string, string>();
         public ConnectionController()
         {
             //dwa podstawowe wątki, czyli odbieranie żądań i analizowanie ich.
@@ -47,6 +48,11 @@ namespace Control_Node
         {
             children.Add(subnetworkNumber, remotePort);
         }
+
+        void AddingPartners(string subnetworkNumber, string remotePort)
+        {
+            partners.Add(subnetworkNumber, remotePort);
+        }
         void analizing()
         {
             while (true)
@@ -67,12 +73,16 @@ namespace Control_Node
                             Console.WriteLine("Otrzymano informacje o zarzadzanym CC podsieci nr " + restMessage);
                             AddingChildren(restMessage, remotePort);
                             break;
+                        case "Partners":
+                            Console.WriteLine("Otrzymano informacje o partnerujacym CC podsieci nr " + restMessage);
+                            AddingPartners(restMessage, remotePort);
+                            break;
                         case "ConnectionRequest":
                             Console.WriteLine("Otrzymano ConnectionRequest.");
                             if (routerCC)
-                                RouteTableQuery(restMessage);
-                            else
                                 LinkConnectionRequest(restMessage);
+                            else
+                                RouteTableQuery(restMessage);
                             break;
                         case "RouteQuery":
                             Console.WriteLine("Otrzymano RouteQuery.");
@@ -80,6 +90,10 @@ namespace Control_Node
                             break;
                         case "PeerCoordination":
                             Console.WriteLine("Otrzymano PeerCoordination.");
+                            if (routerCC)
+                                LinkConnectionRequest(restMessage);
+                            else
+                                RouteTableQuery(restMessage);
                             break;
                     }
                 }
@@ -140,12 +154,12 @@ namespace Control_Node
                 splitArray = element.Split(':');
                 subnetwork = splitArray[0];
                 restMessage = splitArray[1];
-                foreach (KeyValuePair<string, string> kvp in children)
+                foreach (KeyValuePair<string, string> kvpC in children)
                 {
-                    if (kvp.Key == subnetwork)
+                    if (kvpC.Key == subnetwork)
                     {
                         int port;
-                        Int32.TryParse(kvp.Value, out port);
+                        Int32.TryParse(kvpC.Value, out port);
                         var client = new UdpClient();
                         IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
                         client.Connect(point);
@@ -154,8 +168,34 @@ namespace Control_Node
                         var receivedData = client.Receive(ref point);
                         Console.WriteLine("Wyslano ConnectionRequest do podsieci nr " + subnetwork + " o tresci " + restMessage);
                     }
+                    else
+                    {
+                        foreach (KeyValuePair<string, string> kvpP in partners)
+                        {
+                            int port;
+                            Int32.TryParse(kvpP.Value, out port);
+                            var client = new UdpClient();
+                            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+                            client.Connect(point);
+                            string messageOut = "PeerCoordination_" + restMessage;
+                            client.Send(Encoding.UTF8.GetBytes(messageOut), Encoding.UTF8.GetBytes(messageOut).Length);
+                            var receivedData = client.Receive(ref point);
+                            Console.WriteLine("Wyslano PeerCoordination do podsieci nr " + subnetwork + " o tresci " + restMessage);
+                        }
+                    }
                 }
             }
+        }
+
+        void Partners(string subnetworkNumber)
+        {
+            var client = new UdpClient();
+            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15002);
+            client.Connect(point);
+            string message = "Partners_" + subnetworkNumber;
+            client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+            var receivedData = client.Receive(ref point);
+            Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
         }
     }
 }
