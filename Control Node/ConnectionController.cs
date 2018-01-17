@@ -11,8 +11,7 @@ namespace Control_Node
 {
     class ConnectionController
     {
-        //routerCC = TRUE -> CC jest w routerze
-        bool routerCC;
+
         //nr portu na którym słucha CC
         int udpListenPort = 11002;
         //Buffor wiadommości, które przychodzą na powyższy port
@@ -79,10 +78,7 @@ namespace Control_Node
                             break;
                         case "ConnectionRequest":
                             Console.WriteLine("Otrzymano ConnectionRequest.");
-                            if (routerCC)
-                                LinkConnectionRequest(restMessage);
-                            else
-                                RouteTableQuery(restMessage);
+                            RouteTableQuery(restMessage);
                             break;
                         case "RouteQuery":
                             Console.WriteLine("Otrzymano RouteQuery.");
@@ -90,10 +86,7 @@ namespace Control_Node
                             break;
                         case "PeerCoordination":
                             Console.WriteLine("Otrzymano PeerCoordination.");
-                            if (routerCC)
-                                LinkConnectionRequest(restMessage);
-                            else
-                                RouteTableQuery(restMessage);
+                            RouteTableQuery(restMessage);
                             break;
                     }
                 }
