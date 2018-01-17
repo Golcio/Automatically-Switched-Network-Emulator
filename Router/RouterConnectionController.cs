@@ -50,9 +50,10 @@ namespace Router
                     //Interesujące nas elementy to: messageType, restMessage oraz remotePort
                     //remoteIP nie jest potrzebne ze względu na to, że wszystkie komponenty mają ten sam adres IP.
                     string message = Buffor.Pop();
-                    string[] oneSplitMessage = message.Split('_'), secondSplitMessage = oneSplitMessage[1].Split('#');
-                    string messageType = oneSplitMessage[0];
-                    string restMessage = secondSplitMessage[0], remotePort = secondSplitMessage[1].Split(';')[1];
+                    string messageType = message.Split('_')[0];
+                    string restMessage = message.Split('_')[1].Split('#')[0].Split('*')[0];
+                    string connectionNumberGiven = message.Split('_')[1].Split('#')[0].Split('*')[1];
+                    string remotePort = message.Split('_')[1].Split('#')[1].Split(';')[1];
 
                     switch (messageType)
                     {
@@ -60,12 +61,19 @@ namespace Router
                             Console.WriteLine("Otrzymano ConnectionRequest.");
                             LinkConnectionRequest(restMessage);
                             break;
+                        case "PotwierdzenieOdLRMa":
+
+                            break;
                     }
                 }
             }
         }
         
 
+        void ConnectionConfirmation()
+        {
+
+        }
         //Jeżeli CC jest CC routerowym to wtedy ConnectionRequest przesyłane jest do LRMa, 
         //który ma za zadanie zestawić połączenie.
         void LinkConnectionRequest(string linkRequest)

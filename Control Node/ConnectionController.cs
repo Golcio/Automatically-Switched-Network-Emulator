@@ -20,6 +20,12 @@ namespace Control_Node
         //value to numer portu tego dziecka.
         Dictionary<string, string> children = new Dictionary<string, string>();
         Dictionary<string, string> partners = new Dictionary<string, string>();
+        //istniejące połączenia int-numer połączenia, string- numery podsieci, których CC biorą udział
+        //w tym połączeniu
+        Dictionary<int, string> connections = new Dictionary<int, string>();
+        int connectionNumber = 0;
+        int parentPort = 11200;
+
         public ConnectionController()
         {
             //dwa podstawowe wątki, czyli odbieranie żądań i analizowanie ich.
@@ -58,13 +64,14 @@ namespace Control_Node
             {
                 if (Buffor.Count > 0)
                 {
-                    //Wiadomość wygląda następująco: "messageType_restMessage#remoteIP;remotePort
+                    //Wiadomość wygląda następująco: "messageType_restMessage*numerpołączenia#remoteIP;remotePort
                     //Interesujące nas elementy to: messageType, restMessage oraz remotePort
                     //remoteIP nie jest potrzebne ze względu na to, że wszystkie komponenty mają ten sam adres IP.
                     string message = Buffor.Pop();
-                    string[] oneSplitMessage = message.Split('_'), secondSplitMessage = oneSplitMessage[1].Split('#');
-                    string messageType = oneSplitMessage[0];
-                    string restMessage = secondSplitMessage[0], remotePort = secondSplitMessage[1].Split(';')[1];
+                    string messageType = message.Split('_')[0];
+                    string restMessage = message.Split('_')[1].Split('#')[0].Split('*')[0];
+                    string connectionNumberGiven = message.Split('_')[1].Split('#')[0].Split('*')[1];
+                    string remotePort = message.Split('_')[1].Split('#')[1].Split(';')[1];
 
                     switch (messageType)
                     {
@@ -123,9 +130,9 @@ namespace Control_Node
         void FamilyTies(string subnetworkNumber)
         {
             var client = new UdpClient();
-            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15002);
+            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
             client.Connect(point);
-            string message = "FamilyTies_" + subnetworkNumber;
+            string message = "FamilyTies_" + subnetworkNumber + "$" + udpListenPort;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
             var receivedData = client.Receive(ref point);
             Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
@@ -138,9 +145,11 @@ namespace Control_Node
         //Wysyła do nich ConnectionRequest.
         void ConnectionRequest(string message)
         {
+            //message wygląda tak: numerpodsieci:interfejsy;numerpodsieci:interfejsy...
             string[] oneSplitMessage = message.Split(';'), splitArray;
             string subnetwork = " ", restMessage = " ";
-
+            connections.Add(connectionNumber, message);
+            
             foreach (string element in oneSplitMessage)
             {
                 Console.WriteLine("element in oneSplitMessage to: " + element);
@@ -156,7 +165,7 @@ namespace Control_Node
                         var client = new UdpClient();
                         IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
                         client.Connect(point);
-                        string messageOut = "ConnectionRequest_" + restMessage;
+                        string messageOut = "ConnectionRequest_" + restMessage + "*" + connectionNumber.ToString();
                         client.Send(Encoding.UTF8.GetBytes(messageOut), Encoding.UTF8.GetBytes(messageOut).Length);
                         var receivedData = client.Receive(ref point);
                         Console.WriteLine("Wyslano ConnectionRequest do podsieci nr " + subnetwork + " o tresci " + restMessage);
@@ -170,14 +179,14 @@ namespace Control_Node
                             var client = new UdpClient();
                             IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
                             client.Connect(point);
-                            string messageOut = "PeerCoordination_" + restMessage;
+                            string messageOut = "PeerCoordination_" + restMessage + "*" + connectionNumber.ToString();
                             client.Send(Encoding.UTF8.GetBytes(messageOut), Encoding.UTF8.GetBytes(messageOut).Length);
                             var receivedData = client.Receive(ref point);
                             Console.WriteLine("Wyslano PeerCoordination do podsieci nr " + subnetwork + " o tresci " + restMessage);
                         }
                     }
-                }
-            }
+                }            }
+            connectionNumber++;
         }
 
         void Partners(string subnetworkNumber)
