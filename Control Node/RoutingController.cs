@@ -188,7 +188,7 @@ namespace Control_Node
 
         public void LocalTopologyOut()
         {
-
+            
         }
 
         public void NetworkTopologyOut(String SNPid)
