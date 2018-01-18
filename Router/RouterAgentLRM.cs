@@ -23,7 +23,7 @@ namespace Router
         static string ccport;
         static string rcport;
 
-        public RouterAgentLRM(string lrmport, string lrmtolrmport, string ccport, Dictionary<string, string> nextlrms, List<string> labelpool, string rcport)
+        public RouterAgentLRM(string lrmport, string lrmtolrmport, string ccport, Dictionary<string, string> nextlrms, List<string> labelpool, string rcport, List<string[]> switchTables)
         {
             RouterAgentLRM.lrmtolrmport = lrmtolrmport;
             RouterAgentLRM.ccport = ccport;
@@ -36,6 +36,8 @@ namespace Router
             RouterAgentLRM.nextlrms = new Dictionary<string, string>(nextlrms);
             RouterAgentLRM.labelpool = new List<string>(labelpool);
             Router.RouterMain.WriteLine("Link Resource Manager Utworzony.");
+            Thread lrm = new Thread(() => LRMStart(switchTables));
+            lrm.Start();
         }
 
         public static void LRMStart(List<String[]> switchTables)
