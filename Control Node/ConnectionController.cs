@@ -256,12 +256,16 @@ namespace Control_Node
         public static void WriteLine(String text)
         {
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine(text);
+            Console.WriteLine(GetTimestamp(DateTime.Now) + "\tRC: " + text);
         }
         public static void WriteRedLine(String text)
         {
             Console.ForegroundColor = ConsoleColor.DarkRed;
-            Console.WriteLine(text);
+            Console.WriteLine(GetTimestamp(DateTime.Now) + "\tRC: " + text);
+        }
+        public static String GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyy/MM/dd HH:mm:ss:ffff");
         }
     }
 }
