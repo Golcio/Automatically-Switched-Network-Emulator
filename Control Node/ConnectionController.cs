@@ -130,13 +130,19 @@ namespace Control_Node
         //RC zestaw mi połączenie pomiędzy tymi dwoma punktami: w wiadomości przekazywane są dwa punkty.
         void RouteQuery(string routeQuery, string connectionNumber)
         {
-            var client = new UdpClient();
-            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), RCPort);
-            client.Connect(point);
-            string message = "RouteQuery_" + routeQuery + "*" + connectionNumber;
-            client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            var receivedData = client.Receive(ref point);
-            Console.WriteLine("Otrzymano potwierdzenie wysłania RouteQuery. ");
+            if(routeQuery == "NOPATH")
+                Console.WriteLine("Nie można zestawić takiego połączenia.");
+            else
+            {
+                var client = new UdpClient();
+                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), RCPort);
+                client.Connect(point);
+                string message = "RouteQuery_" + routeQuery + "*" + connectionNumber;
+                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                var receivedData = client.Receive(ref point);
+                Console.WriteLine("Otrzymano potwierdzenie wysłania RouteQuery. ");
+            }
+            
         }
 
 
