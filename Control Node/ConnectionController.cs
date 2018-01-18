@@ -25,6 +25,7 @@ namespace Control_Node
         int udpListenPort, subnetworkNumber, RCPort, partnerPort, parentPort;
         //int - numer połączenia, string - numer podsieci, bool - czy doszło potwierdzenie
         Dictionary<int, Dictionary<string, bool>> connections = new Dictionary<int, Dictionary<string, bool>>();
+        Dictionary<string, string> capacity = new Dictionary<string, string>();
 
         public ConnectionController(int udpListenPort, int subnetworkNumber, int RCPort, int partnerPort, int parentPort)
         {
@@ -89,6 +90,7 @@ namespace Control_Node
                     string messageType = message.Split('_')[0];
                     string restMessage = message.Split('_')[1].Split('*')[0];
                     string connectionORportNumber = message.Split('_')[1].Split('*')[1];
+                    string[] array = restMessage.Split(',');
                     switch (messageType)
                     {
                         case "FamilyTies":
@@ -101,6 +103,7 @@ namespace Control_Node
                             break;
                         case "ConnectionRequest":
                             WriteLine("Otrzymano ConnectionRequest.");
+                            capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
                             //restMessage: punkt1,punkt2,przepustowosc
                             RouteQuery(restMessage, connectionORportNumber);
                             break;
@@ -194,9 +197,15 @@ namespace Control_Node
             Int32.TryParse(connectionNumberString, out connectionNumber);
             string[] oneSplitMessage = message.Split(';'), splitArray;
             string subnetwork = " ", restMessage = " ";
+            string capacityString = " ";
             //connections.Add(connectionNumber, message + "*" + oneSplitMessage.Length.ToString());
             //confirmations.Add(connectionNumber, 0);
             connections.Add(connectionNumber, new Dictionary<string, bool>());
+            foreach(KeyValuePair<string,string> kvpCC in capacity)
+            {
+                if (connectionNumberString.Equals(kvpCC.Key))
+                    capacityString = kvpCC.Value;
+            }
             foreach (string element in oneSplitMessage)
             {
                 //Console.WriteLine("element in oneSplitMessage to: " + element);
@@ -213,7 +222,7 @@ namespace Control_Node
                         var client = new UdpClient();
                         IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
                         client.Connect(point);
-                        string messageOut = "ConnectionRequest_" + restMessage + "*" + connectionNumber.ToString();
+                        string messageOut = "ConnectionRequest_" + restMessage + "," + capacityString + "*" + connectionNumber.ToString();
                         client.Send(Encoding.UTF8.GetBytes(messageOut), Encoding.UTF8.GetBytes(messageOut).Length);
                         var receivedData = client.Receive(ref point);
                         Console.WriteLine("Wyslano ConnectionRequest do podsieci nr " + subnetwork + " o tresci " + restMessage);
@@ -230,7 +239,7 @@ namespace Control_Node
                         var client = new UdpClient();
                         IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
                         client.Connect(point);
-                        string messageOut = "PeerCoordination_" + restMessage + "*" + connectionNumber.ToString();
+                        string messageOut = "PeerCoordination_" + restMessage + "," + capacityString + "*" + connectionNumber.ToString();
                         client.Send(Encoding.UTF8.GetBytes(messageOut), Encoding.UTF8.GetBytes(messageOut).Length);
                         var receivedData = client.Receive(ref point);
                         Console.WriteLine("Wyslano PeerCoordination do podsieci nr " + subnetwork + " o tresci " + restMessage);
