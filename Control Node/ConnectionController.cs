@@ -34,7 +34,7 @@ namespace Control_Node
             this.partnerPort = partnerPort;
             this.parentPort = parentPort;
             FamilyTies();
-            if (partnerPort =! 0)
+            if (partnerPort > 0)
                 Partners(subnetworkNumber.ToString());
             //dwa podstawowe wątki, czyli odbieranie żądań i analizowanie ich.
             Thread receiveThread = new Thread(() => receiving());
