@@ -67,7 +67,7 @@ namespace Router
         {
             Console.Title = "networkNode" + routernumber;
             new RouterConfigParser("config" + routernumber + ".txt", routernumber, ref port, ref cloudport, ref ccport, ref higherccport, ref lrmport, ref lrmtolrmport, nextlrms, labelpool, ref rcport, ref ccportINT, ref parentPort);
-            new RouterAgentLRM(lrmport, lrmtolrmport, ccport, nextlrms, labelpool, rcport);
+            new RouterAgentLRM(lrmport, lrmtolrmport, ccport, nextlrms, labelpool, rcport, switchTables);
             int lrmportINT;
             Int32.TryParse(lrmport, out lrmportINT);
             RouterConnectionController connectionController = new RouterConnectionController(routernumber, ccportINT, parentPort, lrmportINT);
