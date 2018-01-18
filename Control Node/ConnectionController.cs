@@ -149,7 +149,7 @@ namespace Control_Node
             client.Connect(point);
             string message = "FamilyTies_" + subnetworkNumber.ToString() + "*" + udpListenPort;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            var receivedData = client.Receive(ref point);
+            //var receivedData = client.Receive(ref point);
             Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
             
         }
@@ -217,7 +217,7 @@ namespace Control_Node
             client.Connect(point);
             string message = "Partners_" + subnetworkNumber + "*" + udpListenPort;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            var receivedData = client.Receive(ref point);
+            //var receivedData = client.Receive(ref point);
             Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
         }
     }

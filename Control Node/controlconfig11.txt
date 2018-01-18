@@ -28,7 +28,7 @@ R8.S1/1_R6.S1/3_10
 R7.S1/3_R8.S1/2_50
 R8.S1/2_R7.S1/3_50
 Clients
-ClientB_R7.S1/2
-ClientC_R8.S1/3
+C2_R7.S1/2
+C3_R8.S1/3
 RemoteRCs
 10_14210_R6.S1/1

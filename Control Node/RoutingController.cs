@@ -67,19 +67,26 @@ namespace Control_Node
 
         public void RouteQuery(string pathStart, string pathEnd, string bandwidth, string connectionID)
         {
-            WriteLine("Wyliczanie ścieżki z " + pathStart + " do " + pathEnd + " >= "
-                + bandwidth + " Mbps");
+            WriteLine("Wyliczanie ścieżki z " + pathStart + " do " + pathEnd + " >= " + bandwidth + " Mbps");
             int intbandwidth = Int32.Parse(bandwidth);
             float cost1 = 1 / (float)intbandwidth;
             int cost = (int)(100000 * cost1);
             StringBuilder remotesb = new StringBuilder();
             bool ifRemoteClient = false;
+            foreach (KeyValuePair <string,string> kvp in localTopology.clientsSNPPs)
+            {
+                if (kvp.Key.Equals(pathStart))
+                {
+                    pathStart = kvp.Value;
+                }
+            }
             string remoteAS = null;
             foreach (KeyValuePair<string, RemoteTopology.Topology> kvp in remoteTopology.topologies)
                 foreach (KeyValuePair<string, string> kvp2 in kvp.Value.clientsSNPPs)
                 {
-                    if (kvp2.Value.Equals(pathEnd))
+                    if (kvp2.Key.Equals(pathEnd))
                     {
+                        pathEnd = kvp2.Value;
                         remoteAS = kvp.Key;
                         remotesb.Append(";" + kvp.Key + ":");
                         remotesb.Append(kvp.Value.inputSNPP + "," + pathEnd);
@@ -174,8 +181,6 @@ namespace Control_Node
                     sb.Append(remotesb.ToString());
                     snpps.Append(pathEnd);
                     output = sb.ToString();
-                    WriteLine("Wysyłam " + output + " do " + ccport);
-                    Console.ReadKey();
                     Send(output, ccport);
                     WriteLine("Ścieżka z " + pathStart + " do " + pathEnd + ": [" + snpps.ToString() + "]");
                 }
