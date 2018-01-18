@@ -182,11 +182,6 @@ namespace Control_Node
             Send("NetworkTopologyIn_" + subnetworknumber, remoteRCsPorts[SNPid]);
         }
 
-        public void RemoteTopologyIn()
-        {
-            
-        }
-
         public void NetworkTopologyOut(String SNPid)
         {
             ShortTopology shortTopology = new ShortTopology();
