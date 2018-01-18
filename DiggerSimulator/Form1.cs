@@ -19,8 +19,6 @@ namespace DiggerSimulator
         string inputPort = null;
         List<String[]> connectionsToBreak = new List<string[]>();
         List<String[]> connectionsBroken = new List<string[]>();
-        Dictionary<String, int> inputPorts = new Dictionary<String, int>();
-        Dictionary<String, int> outputPorts = new Dictionary<String, int>();
         Dictionary<String, int> sendingPorts = new Dictionary<String, int>();
         public Form1()
         {
@@ -50,8 +48,8 @@ namespace DiggerSimulator
                     if (splitArray[0].Equals("ConnectionBroken"))
                     {
                         string[] connection = new string[2];
-                        connection[0] = inputPorts[splitArray[1]].ToString();
-                        connection[1] = outputPorts[splitArray[2]].ToString();
+                        connection[0] = splitArray[1];
+                        connection[1] = splitArray[2];
                         for (int i = 0; i < connectionsToBreak.Count; i++)
                         {
                             if (connectionsToBreak[i][0].Equals(connection[0]))
@@ -75,8 +73,8 @@ namespace DiggerSimulator
                     else if (splitArray[0].Equals("ConnectionRestored"))
                     {
                         string[] connection = new string[2];
-                        connection[0] = inputPorts[splitArray[1]].ToString();
-                        connection[1] = outputPorts[splitArray[2]].ToString();
+                        connection[0] = splitArray[1];
+                        connection[1] = splitArray[2];
                         for (int i = 0; i < connectionsBroken.Count; i++)
                         {
                             if (connectionsBroken[i][0].Equals(connection[0]))
@@ -111,19 +109,7 @@ namespace DiggerSimulator
             comboBox1.Items.Clear();
             foreach (String[] connection in connectionsToBreak)
             {
-                string nodeA = null;
-                string nodeB = null;
-                foreach (KeyValuePair<String, int> kvp in inputPorts)
-                {
-                    if (kvp.Value == Int32.Parse(connection[0]))
-                        nodeA = kvp.Key;
-                }
-                foreach (KeyValuePair<String, int> kvp in outputPorts)
-                {
-                    if (kvp.Value == Int32.Parse(connection[1]))
-                        nodeB = kvp.Key;
-                }
-                string text = nodeA + "-" + nodeB;
+                string text = connection[0] + "-" + connection[1];
                 comboBox1.Items.Add(text);
             }
             if (comboBox1.Items.Count > 0)
@@ -135,19 +121,7 @@ namespace DiggerSimulator
             comboBox2.Items.Clear();
             foreach (String[] connection in connectionsBroken)
             {
-                string nodeA = null;
-                string nodeB = null;
-                foreach (KeyValuePair<String, int> kvp in inputPorts)
-                {
-                    if (kvp.Value == Int32.Parse(connection[0]))
-                        nodeA = kvp.Key;
-                }
-                foreach (KeyValuePair<String, int> kvp in outputPorts)
-                {
-                    if (kvp.Value == Int32.Parse(connection[1]))
-                        nodeB = kvp.Key;
-                }
-                string text = nodeA + "-" + nodeB;
+                string text = connection[0] + "-" + connection[1];
                 comboBox2.Items.Add(text);
             }
             if (comboBox2.Items.Count > 0)
@@ -180,11 +154,7 @@ namespace DiggerSimulator
                             if (currentParsing.Equals("nodes"))
                             {
                                 string[] splitArray = line.Split('_');
-                                int outputPort = Int32.Parse(splitArray[1]);
-                                outputPorts.Add(splitArray[0], outputPort);
-                                int inputPort = Int32.Parse(splitArray[2]);
-                                inputPorts.Add(splitArray[0], inputPort);
-                                int sendingPort = Int32.Parse(splitArray[3]);
+                                int sendingPort = Int32.Parse(splitArray[1]);
                                 sendingPorts.Add(splitArray[0], sendingPort);
                             }
                             else if (currentParsing.Equals("connections"))
@@ -215,7 +185,9 @@ namespace DiggerSimulator
             string connection = comboBox1.SelectedItem.ToString();
             string[] split = connection.Split('-');
             string output = "BreakConnection_" + split[0] + "-" + split[1];
-            string destination = sendingPorts[split[0]].ToString();
+            string[] split2 = split[0].Split('.');
+            string node = split2[0];
+            string destination = sendingPorts[node].ToString();
             Send(output, destination);
             writeToConsole("Wysyłam żądanie zniszczenia połączenia " + connection + "...");
         }
@@ -230,7 +202,9 @@ namespace DiggerSimulator
             string connection = comboBox2.SelectedItem.ToString();
             string[] split = connection.Split('-');
             string output = "RestoreConnection_" + split[0] + "-" + split[1];
-            string destination = sendingPorts[split[0]].ToString();
+            string[] split2 = split[0].Split('.');
+            string node = split2[0];
+            string destination = sendingPorts[node].ToString();
             Send(output, destination);
             writeToConsole("Wysyłam żądanie naprawy połączenia " + connection + "...");
         }
