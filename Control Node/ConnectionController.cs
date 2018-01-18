@@ -34,9 +34,8 @@ namespace Control_Node
             this.partnerPort = partnerPort;
             this.parentPort = parentPort;
             FamilyTies();
-            Partners(subnetworkNumber.ToString());
-            Console.WriteLine("udpListenPort: " + udpListenPort);
-            Console.WriteLine("snpnumber: " + subnetworkNumber);
+            if (partnerPort =! 0)
+                Partners(subnetworkNumber.ToString());
             //dwa podstawowe wątki, czyli odbieranie żądań i analizowanie ich.
             Thread receiveThread = new Thread(() => receiving());
             receiveThread.Start();
@@ -93,20 +92,20 @@ namespace Control_Node
                     switch (messageType)
                     {
                         case "FamilyTies":
-                            Console.WriteLine("Otrzymano informacje o zarzadzanym CC podsieci nr " + restMessage);
+                            WriteLine("Otrzymano informacje o zarzadzanym CC podsieci nr " + restMessage);
                             AddingChildren(restMessage, connectionORportNumber);
                             break;
                         case "Partners":
-                            Console.WriteLine("Otrzymano informacje o partnerujacym CC podsieci nr " + restMessage);
+                            WriteLine("Otrzymano informacje o partnerujacym CC podsieci nr " + restMessage);
                             AddingPartners(restMessage, connectionORportNumber);
                             break;
                         case "ConnectionRequest":
-                            Console.WriteLine("Otrzymano ConnectionRequest.");
+                            WriteLine("Otrzymano ConnectionRequest.");
                             //restMessage: punkt1,punkt2,przepustowosc
                             RouteQuery(restMessage, connectionORportNumber);
                             break;
                         case "RouteQuery":
-                            Console.WriteLine("Otrzymano RouteQuery.");
+                            WriteLine("Otrzymano RouteQuery.");
                             //restMessage: numerPodsieci:punkt1,punkt2;numerPodsieci2:punkt1,punkt2
                             ConnectionRequest(restMessage, connectionORportNumber);
                             break;
