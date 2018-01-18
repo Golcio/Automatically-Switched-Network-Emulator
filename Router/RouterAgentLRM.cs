@@ -44,6 +44,7 @@ namespace Router
             string label2 = null;
             string port1 = null;
             string port2 = null;
+            string connectionid = null;
 
             try
             {
@@ -56,7 +57,8 @@ namespace Router
                     //wiadomość od CC
                     if (splitArray[0].Equals("LinkConnectionRequest"))
                     {
-                        Thread lkr = new Thread(() =>
+                        connectionid = received_data.Split('*')[1];
+                        Thread lcr = new Thread(() =>
                         {
                             returnvalues = LinkConnectionRequest(splitArray[1], switchTables, labelpool, nextlrms);
                             label2 = returnvalues[0];
@@ -68,7 +70,7 @@ namespace Router
                             }
                         });
 
-                        lkr.Start();
+                        lcr.Start();
                     }
                     //wiadomośc od CC (jeszcze nie gotowe)
                     else if (splitArray[0].Equals("LinkConnectionDeallocation"))
@@ -89,7 +91,7 @@ namespace Router
                         label2 = null;
                         port1 = null;
                         port2 = null;
-                        Send("LinkConnectionRequestConfirm", ccport);
+                        Send("LinkConnectionRequestConfirm_" + connectionid, ccport);
                     }
                 }
             }
