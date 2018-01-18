@@ -41,20 +41,41 @@ namespace ClientTSST8
         Thread senderThread;
 
         CallingPartyCallController callingPartyCallController;
-        public string label = null; //etykieta z jaką będzie słane
+        public string label = "0";
         public bool connected = false;
         public string connectedID = null;
+        public string myName = null;
 
-        public MainWindow(Sender sender, Reader reader)
+        public MainWindow(Sender sender, Reader reader, string cpccinput, string nccport, string myid)
         {
             this.sender = sender;
             this.reader = reader;
-            InitializeComponent();
             string clientName = reader.getClientName();
+            myName = clientName;
+            InitializeComponent();
+            if (myName.Equals("A"))
+            {
+                this.comboBox1.Items.AddRange(new object[] {
+                "clientB",
+                "clientC"});
+            }
+            else if (myName.Equals("B"))
+            {
+                this.comboBox1.Items.AddRange(new object[] {
+                "clientA",
+                "clientC"});
+            }
+            else if (myName.Equals("C"))
+            {
+                this.comboBox1.Items.AddRange(new object[] {
+                "clientA",
+                "clientB"});
+            }
             this.comboBox2.Items.AddRange((object[])new string[] { "500", "1000" });
             richTextBox1.SelectionColor = Color.MediumOrchid;
-            richTextBox1.SelectedText =("Witaj kliencie " + clientName + "\n");
+            richTextBox1.SelectedText = ("Witaj kliencie " + clientName + "\n");
             this.Text = "Client" + clientName;
+            callingPartyCallController = new CallingPartyCallController(cpccinput, nccport, myid, this);
         }
 
         private void InitializeComponent()
@@ -87,10 +108,7 @@ namespace ClientTSST8
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] {
-            "clientA",
-            "clientB",
-            "clientC"});
+            this.comboBox1.Items.AddRange(new object[] { });
             this.comboBox1.Location = new System.Drawing.Point(19, 29);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(200, 24);
@@ -317,7 +335,7 @@ namespace ClientTSST8
 
         private void MainWindow_Load(object sender, EventArgs e)
         {
-            
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -353,7 +371,13 @@ namespace ClientTSST8
         {
             string destinationid = this.comboBox1.Text;
             string capacity = this.textBox3.Text;
-            callingPartyCallController.CallRequest(destinationid, capacity);
+            if (destinationid.Length > 0 && capacity.Length > 0)
+            {
+                callingPartyCallController.CallRequest(destinationid, capacity);
+                string text = "Łączę z " + destinationid + "...\n";
+                this.richTextBox1.SelectedText += text;
+                this.richTextBox1.ScrollToCaret();
+            }
         }
 
         private void comboBox3_SelectedIndexChanged(object sender, EventArgs e)
@@ -380,14 +404,13 @@ namespace ClientTSST8
             this.richTextBox1.ScrollToCaret();
         }
 
-        public void connectedProcedure(string connectedID, string label)
+        public void connectedProcedure(string connectedIDl)
         {
             if (connected == false)
             {
                 this.connectedID = connectedID;
                 this.connected = true;
-                this.label = label;
-
+                string text = "Połączono z " + connectedID + ".\n";
                 MethodInvoker inv = delegate
                 {
                     this.comboBox1.Enabled = false;
@@ -396,6 +419,8 @@ namespace ClientTSST8
                     this.button5.Enabled = true;
                     this.button1.Enabled = true;
                     this.label8.Text = connectedID;
+                    this.richTextBox1.SelectedText += text;
+                    this.richTextBox1.ScrollToCaret();
                 };
                 this.Invoke(inv);
             }
