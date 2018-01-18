@@ -11,7 +11,7 @@ namespace Control_Node
 {
     class ConnectionController
     {
-        
+
         //Buffor wiadommości, które przychodzą na powyższy port
         Stack<string> Buffor = new Stack<string>();
         //komponenty CC, którymi zarządza dany CC, key to numer podsieci, którą zarządza CCdziecko,
@@ -52,7 +52,8 @@ namespace Control_Node
                 {
                     var remoteEP = new IPEndPoint(IPAddress.Any, udpListenPort);
                     var data = udpServer.Receive(ref remoteEP);
-                    Console.WriteLine(remoteEP.ToString());
+                    //Console.WriteLine(remoteEP.ToString());
+                    Console.WriteLine(Buffor.Count);
                     Buffor.Push(Encoding.UTF8.GetString(data));
                     Console.WriteLine("Otrzymano wiadomosc o tresci " + Encoding.UTF8.GetString(data));
                     string response = "200 OK";
@@ -87,8 +88,7 @@ namespace Control_Node
                     string message = Buffor.Pop();
                     string messageType = message.Split('_')[0];
                     string restMessage = message.Split('_')[1].Split('*')[0];
-                    string connectionORportNumber = message.Split('_')[1].Split('*')[0]; 
-
+                    string connectionORportNumber = message.Split('_')[1].Split('*')[1];
                     switch (messageType)
                     {
                         case "FamilyTies":
@@ -150,7 +150,7 @@ namespace Control_Node
                     client.Connect(point);
                     string message = "RouteQuery_" + routeQuery + "*" + connectionNumber;
                     client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-                    var receivedData = client.Receive(ref point);
+                    //var receivedData = client.Receive(ref point);
                     Console.WriteLine("Otrzymano potwierdzenie wysłania RouteQuery. ");
                 }
             }
@@ -158,7 +158,7 @@ namespace Control_Node
             {
 
             }
-            
+
         }
 
 
@@ -180,7 +180,7 @@ namespace Control_Node
             {
 
             }
-            
+
         }
 
         //w momencie, gdy dostaniemy wiadomość od RC z podsieciami pomiędzy którymi 
@@ -196,17 +196,17 @@ namespace Control_Node
             string subnetwork = " ", restMessage = " ";
             //connections.Add(connectionNumber, message + "*" + oneSplitMessage.Length.ToString());
             //confirmations.Add(connectionNumber, 0);
+            connections.Add(connectionNumber, new Dictionary<string, bool>());
             foreach (string element in oneSplitMessage)
             {
-                Console.WriteLine("element in oneSplitMessage to: " + element);
+                //Console.WriteLine("element in oneSplitMessage to: " + element);
                 splitArray = element.Split(':');
                 subnetwork = splitArray[0];
                 restMessage = splitArray[1];
-                connections.Add(connectionNumber, new Dictionary<string, bool>());
-                
+
                 foreach (KeyValuePair<string, string> kvpC in children)
                 {
-                    if (kvpC.Key == subnetwork)
+                    if (kvpC.Key.Equals(subnetwork))
                     {
                         int port;
                         Int32.TryParse(kvpC.Value, out port);
@@ -219,26 +219,26 @@ namespace Control_Node
                         Console.WriteLine("Wyslano ConnectionRequest do podsieci nr " + subnetwork + " o tresci " + restMessage);
                         connections[connectionNumber].Add(subnetwork, false);
                     }
-                    else
-                    {
-                        foreach (KeyValuePair<string, string> kvpP in partners)
-                        {
-                            int port;
-                            Int32.TryParse(kvpP.Value, out port);
-                            var client = new UdpClient();
-                            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
-                            client.Connect(point);
-                            string messageOut = "PeerCoordination_" + restMessage + "*" + connectionNumber.ToString();
-                            client.Send(Encoding.UTF8.GetBytes(messageOut), Encoding.UTF8.GetBytes(messageOut).Length);
-                            var receivedData = client.Receive(ref point);
-                            Console.WriteLine("Wyslano PeerCoordination do podsieci nr " + subnetwork + " o tresci " + restMessage);
-                            connections[connectionNumber].Add(subnetwork, false);
-                        }
-                    }
-                }            }
-            
-        }
+                }
 
+                foreach (KeyValuePair<string, string> kvpP in partners)
+                {
+                    if (kvpP.Key.Equals(subnetwork))
+                    {
+                        int port;
+                        Int32.TryParse(kvpP.Value, out port);
+                        var client = new UdpClient();
+                        IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+                        client.Connect(point);
+                        string messageOut = "PeerCoordination_" + restMessage + "*" + connectionNumber.ToString();
+                        client.Send(Encoding.UTF8.GetBytes(messageOut), Encoding.UTF8.GetBytes(messageOut).Length);
+                        var receivedData = client.Receive(ref point);
+                        Console.WriteLine("Wyslano PeerCoordination do podsieci nr " + subnetwork + " o tresci " + restMessage);
+                        connections[connectionNumber].Add(subnetwork, false);
+                    }
+                }
+            }
+        }
         void Partners(string subnetworkNumber)
         {
             try
@@ -250,9 +250,9 @@ namespace Control_Node
                 client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
                 //var receivedData = client.Receive(ref point);
                 WriteLine("Otrzymano potwierdzenie partnerstwa. ");
-            } 
-            catch(Exception e)
-            {  }
+            }
+            catch (Exception e)
+            { }
         }
         public static void WriteLine(String text)
         {
