@@ -1,7 +1,7 @@
 CC
 16002
 PartnerPort
-null
+0
 ParentPort
 16001
 ConnectionControllers
