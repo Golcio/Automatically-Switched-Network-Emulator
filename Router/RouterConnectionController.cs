@@ -85,7 +85,7 @@ namespace Router
             client.Connect(point);
             string message = "ConnectionConfirmation_" + restMessage + "*" + connectionNumber;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            var receivedData = client.Receive(ref point);
+            //var receivedData = client.Receive(ref point);
             Console.WriteLine("Otrzymano potwierdzenie wysłania ConnectionConfirmation.");
         }
         //Jeżeli CC jest CC routerowym to wtedy ConnectionRequest przesyłane jest do LRMa, 
@@ -97,7 +97,7 @@ namespace Router
             client.Connect(point);
             string message = "LinkConnectionRequest_" + linkRequest + "*" + connectionNumberGiven;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            var receivedData = client.Receive(ref point);
+            //var receivedData = client.Receive(ref point);
             Console.WriteLine("Otrzymano potwierdzenie wysłania LinkConnectionRequest.");
         }
 
@@ -110,7 +110,7 @@ namespace Router
             client.Connect(point);
             string message = "FamilyTies_" + subnetworkNumber.ToString() + "*" + udpListenPort.ToString();
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            var receivedData = client.Receive(ref point);
+            //var receivedData = client.Receive(ref point);
             Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
 
         }
