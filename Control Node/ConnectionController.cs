@@ -123,6 +123,7 @@ namespace Control_Node
                             break;
                     }
                 }
+                Thread.Sleep(50);
             }
         }
 
@@ -140,7 +141,7 @@ namespace Control_Node
             try
             {
                 if (routeQuery == "NOPATH")
-                    Console.WriteLine("Nie można zestawić takiego połączenia.");
+                    WriteRedLine("Nie można zestawić takiego połączenia.");
                 else
                 {
                     var client = new UdpClient();
@@ -247,10 +248,20 @@ namespace Control_Node
                 string message = "Partners_" + subnetworkNumber + "*" + udpListenPort;
                 client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
                 //var receivedData = client.Receive(ref point);
-                Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
+                WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
             } 
             catch(Exception e)
             {  }
+        }
+        public static void WriteLine(String text)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(text);
+        }
+        public static void WriteRedLine(String text)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(text);
         }
     }
 }
