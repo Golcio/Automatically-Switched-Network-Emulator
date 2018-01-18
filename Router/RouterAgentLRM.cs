@@ -50,6 +50,7 @@ namespace Router
             string port1 = null;
             string port2 = null;
             string connectionid = null;
+            string SNPPs = null;
 
             try
             {
@@ -63,9 +64,10 @@ namespace Router
                     if (splitArray[0].Equals("LinkConnectionRequest"))
                     {
                         connectionid = received_data.Split('*')[1];
+                        SNPPs = splitArray[1].Split('*')[0];
                         Thread lcr = new Thread(() =>
                         {
-                            returnvalues = LinkConnectionRequest(splitArray[1], switchTables, labelpool, nextlrms);
+                            returnvalues = LinkConnectionRequest(splitArray[1].Split('*')[0], switchTables, labelpool, nextlrms);
                             label2 = returnvalues[0];
                             port1 = returnvalues[1];
                             port2 = returnvalues[2];
@@ -107,7 +109,7 @@ namespace Router
                         label2 = null;
                         port1 = null;
                         port2 = null;
-                        Send("LinkConnectionRequestConfirm_" + connectionid, ccport);
+                        Send("LinkConnectionRequestConfirm_" + SNPPs + "*" + connectionid, ccport);
                         Router.RouterMain.WriteLine("LRM: Zestawiono połączenie nr " + connectionid);
                     }
                 }

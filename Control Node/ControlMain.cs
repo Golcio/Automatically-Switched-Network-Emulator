@@ -14,7 +14,6 @@ namespace Control_Node
         static int subnetworknumber;
         static string ccport;
         static string rcport;
-        static string lrmport;
         static int parentPort;
         static int partnerPort;
         static RoutingController routingController;
