@@ -13,16 +13,21 @@ namespace Router
     {
         //nr portu na którym słucha CC
         int udpListenPort;
+        int parentPort;
         //Buffor wiadommości, które przychodzą na powyższy port
         Stack<string> Buffor = new Stack<string>();
         int subnetworkNumber;
+        int lrmPort;
         Dictionary<int, string> connections = new Dictionary<int, string>();
 
-        public RouterConnectionController(int routerNumber, int udpListenPort)
+        public RouterConnectionController(int routerNumber, int udpListenPort, int parentPort, int lrmPort)
         {
             //dwa podstawowe wątki, czyli odbieranie żądań i analizowanie ich.
             this.subnetworkNumber = routerNumber;
             this.udpListenPort = udpListenPort;
+            this.parentPort = parentPort;
+            this.lrmPort = lrmPort;
+            FamilyTies();
             Thread receiveThread = new Thread(() => receiving());
             receiveThread.Start();
             Thread analizeThread = new Thread(() => analizing());
@@ -56,16 +61,16 @@ namespace Router
                     string message = Buffor.Pop();
                     string messageType = message.Split('_')[0];
                     string restMessage = message.Split('_')[1].Split('*')[0];
-                    string connectionNumberGiven = message.Split('_')[1].Split('*')[1];
+                    string connectionORportNumber = message.Split('_')[1].Split('*')[1];
 
                     switch (messageType)
                     {
                         case "ConnectionRequest":
                             Console.WriteLine("Otrzymano ConnectionRequest.");
-                            LinkConnectionRequest(restMessage, connectionNumberGiven);
+                            LinkConnectionRequest(restMessage, connectionORportNumber);
                             break;
                         case "LinkConnectionRequestConfirm":
-                            ConnectionConfirmation(restMessage, connectionNumberGiven);
+                            ConnectionConfirmation(restMessage, connectionORportNumber);
                             break;
                     }
                 }
@@ -76,7 +81,7 @@ namespace Router
         void ConnectionConfirmation(string restMessage, string connectionNumber)
         {
             var client = new UdpClient();
-            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15002);
+            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
             client.Connect(point);
             string message = "ConnectionConfirmation_" + restMessage + "*" + connectionNumber;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
@@ -88,7 +93,7 @@ namespace Router
         void LinkConnectionRequest(string linkRequest, string connectionNumberGiven)
         {
             var client = new UdpClient();
-            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15002);
+            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), lrmPort);
             client.Connect(point);
             string message = "LinkConnectionRequest_" + linkRequest + "*" + connectionNumberGiven;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
@@ -101,7 +106,7 @@ namespace Router
         void FamilyTies()
         {
             var client = new UdpClient();
-            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 15002);
+            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
             client.Connect(point);
             string message = "FamilyTies_" + subnetworkNumber.ToString() + "*" + udpListenPort.ToString();
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);

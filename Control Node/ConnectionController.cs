@@ -11,7 +11,6 @@ namespace Control_Node
 {
     class ConnectionController
     {
-
         
         //Buffor wiadommości, które przychodzą na powyższy port
         Stack<string> Buffor = new Stack<string>();
@@ -34,6 +33,8 @@ namespace Control_Node
             this.RCPort = RCPort;
             this.partnerPort = partnerPort;
             this.parentPort = parentPort;
+            FamilyTies();
+            Partners(subnetworkNumber.ToString());
             //dwa podstawowe wątki, czyli odbieranie żądań i analizowanie ich.
             Thread receiveThread = new Thread(() => receiving());
             receiveThread.Start();
@@ -110,6 +111,8 @@ namespace Control_Node
                             break;
                         case "WyjebanePolaczenie":
 
+                            break;
+                        case "koniec połączenia":
                             break;
                     }
                 }
