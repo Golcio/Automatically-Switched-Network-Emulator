@@ -35,6 +35,7 @@ namespace Router
             sender = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             RouterAgentLRM.nextlrms = new Dictionary<string, string>(nextlrms);
             RouterAgentLRM.labelpool = new List<string>(labelpool);
+            Router.RouterMain.WriteLine("Link Resource Manager Utworzony.");
         }
 
         public static void LRMStart(List<String[]> switchTables)
@@ -105,6 +106,7 @@ namespace Router
                         port1 = null;
                         port2 = null;
                         Send("LinkConnectionRequestConfirm_" + connectionid, ccport);
+                        Router.RouterMain.WriteLine("LRM: Zestawiono połączenie nr " + connectionid);
                     }
                 }
             }
