@@ -74,6 +74,7 @@ namespace Router
                             break;
                     }
                 }
+                Thread.Sleep(50);
             }
         }
         
