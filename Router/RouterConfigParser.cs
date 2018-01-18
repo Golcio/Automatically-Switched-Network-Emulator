@@ -9,7 +9,7 @@ namespace Router
 {
     class RouterConfigParser
     {
-        public RouterConfigParser(string filename, int routernumber, ref string port, ref string cloudport, ref string ccport, ref string higherccport, ref string lrmport, ref string lrmtolrmport, Dictionary<string, string> nextlrms, List<string> labelpool, ref string rcport)
+        public RouterConfigParser(string filename, int routernumber, ref string port, ref string cloudport, ref string ccport, ref string higherccport, ref string lrmport, ref string lrmtolrmport, Dictionary<string, string> nextlrms, List<string> labelpool, ref string rcport, ref int ccportINT, ref int parentPort)
         {
             try
             {
@@ -41,6 +41,10 @@ namespace Router
                             currentParsing = "labelpool";
                         else if (line.Equals("RC"))
                             currentParsing = "RC";
+                        else if (line.Equals("CC"))
+                            currentParsing = "CC";
+                        else if (line.Equals("ParentPort"))
+                            currentParsing = "ParentPort";
                         else
                         {
                             if (currentParsing.Equals("address"))
@@ -80,7 +84,18 @@ namespace Router
                             {
                                 rcport = line;
                             }
-
+                            else if (currentParsing.Equals("CC"))
+                            {
+                                int portPort;
+                                Int32.TryParse(line, out portPort);
+                                ccportINT = portPort;
+                            }
+                            else if (currentParsing.Equals("ParentPort"))
+                            {
+                                int portPort;
+                                Int32.TryParse(line, out portPort);
+                                parentPort = portPort;
+                            }
                         }
                     }
                 }

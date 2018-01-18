@@ -22,3 +22,7 @@ labelpool
 35
 RC
 14211
+CC
+18007
+ParentPort
+16003

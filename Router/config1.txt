@@ -21,3 +21,7 @@ labelpool
 5
 RC
 14210
+CC
+18001
+ParentPort
+16001

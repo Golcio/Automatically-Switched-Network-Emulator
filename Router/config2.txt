@@ -22,3 +22,7 @@ labelpool
 10
 RC
 14209
+CC
+18002
+ParentPort
+16002

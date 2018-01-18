@@ -22,3 +22,7 @@ labelpool
 40
 RC
 14211
+CC
+18008
+ParentPort
+16003
