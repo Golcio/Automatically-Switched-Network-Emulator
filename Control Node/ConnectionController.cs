@@ -44,16 +44,23 @@ namespace Control_Node
         }
         void receiving()
         {
-            UdpClient udpServer = new UdpClient(udpListenPort);
-            while (true)
+            try
             {
-                var remoteEP = new IPEndPoint(IPAddress.Any, udpListenPort);
-                var data = udpServer.Receive(ref remoteEP);
-                Console.WriteLine(remoteEP.ToString());
-                Buffor.Push(Encoding.UTF8.GetString(data));
-                Console.WriteLine("Otrzymano wiadomosc o tresci " + Encoding.UTF8.GetString(data));
-                string response = "200 OK";
-                udpServer.Send(Encoding.UTF8.GetBytes(response), Encoding.UTF8.GetBytes(response).Length, remoteEP);
+                UdpClient udpServer = new UdpClient(udpListenPort);
+                while (true)
+                {
+                    var remoteEP = new IPEndPoint(IPAddress.Any, udpListenPort);
+                    var data = udpServer.Receive(ref remoteEP);
+                    Console.WriteLine(remoteEP.ToString());
+                    Buffor.Push(Encoding.UTF8.GetString(data));
+                    Console.WriteLine("Otrzymano wiadomosc o tresci " + Encoding.UTF8.GetString(data));
+                    string response = "200 OK";
+                    udpServer.Send(Encoding.UTF8.GetBytes(response), Encoding.UTF8.GetBytes(response).Length, remoteEP);
+                }
+            }
+            catch (Exception e)
+            {
+
             }
         }
         void AddingChildren(string subnetworkNumber, string remotePort)
@@ -130,17 +137,24 @@ namespace Control_Node
         //RC zestaw mi połączenie pomiędzy tymi dwoma punktami: w wiadomości przekazywane są dwa punkty.
         void RouteQuery(string routeQuery, string connectionNumber)
         {
-            if(routeQuery == "NOPATH")
-                Console.WriteLine("Nie można zestawić takiego połączenia.");
-            else
+            try
             {
-                var client = new UdpClient();
-                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), RCPort);
-                client.Connect(point);
-                string message = "RouteQuery_" + routeQuery + "*" + connectionNumber;
-                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-                var receivedData = client.Receive(ref point);
-                Console.WriteLine("Otrzymano potwierdzenie wysłania RouteQuery. ");
+                if (routeQuery == "NOPATH")
+                    Console.WriteLine("Nie można zestawić takiego połączenia.");
+                else
+                {
+                    var client = new UdpClient();
+                    IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), RCPort);
+                    client.Connect(point);
+                    string message = "RouteQuery_" + routeQuery + "*" + connectionNumber;
+                    client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                    var receivedData = client.Receive(ref point);
+                    Console.WriteLine("Otrzymano potwierdzenie wysłania RouteQuery. ");
+                }
+            }
+            catch (Exception e)
+            {
+
             }
             
         }
@@ -150,13 +164,20 @@ namespace Control_Node
         //a ty zarządzasz mną. Jak coś to siędzę na tym porcie, elo pis joł
         void FamilyTies()
         {
-            var client = new UdpClient();
-            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
-            client.Connect(point);
-            string message = "FamilyTies_" + subnetworkNumber.ToString() + "*" + udpListenPort;
-            client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            var receivedData = client.Receive(ref point);
-            Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
+            try
+            {
+                var client = new UdpClient();
+                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
+                client.Connect(point);
+                string message = "FamilyTies_" + subnetworkNumber.ToString() + "*" + udpListenPort;
+                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                //var receivedData = client.Receive(ref point);
+                Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
+            }
+            catch (Exception e)
+            {
+
+            }
             
         }
 
@@ -218,13 +239,18 @@ namespace Control_Node
 
         void Partners(string subnetworkNumber)
         {
-            var client = new UdpClient();
-            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), partnerPort);
-            client.Connect(point);
-            string message = "Partners_" + subnetworkNumber + "*" + udpListenPort;
-            client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            var receivedData = client.Receive(ref point);
-            Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
+            try
+            {
+                var client = new UdpClient();
+                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), partnerPort);
+                client.Connect(point);
+                string message = "Partners_" + subnetworkNumber + "*" + udpListenPort;
+                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                //var receivedData = client.Receive(ref point);
+                Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
+            } 
+            catch(Exception e)
+            {  }
         }
     }
 }
