@@ -46,9 +46,10 @@ namespace Control_Node
         {
             try
             {
-                UdpClient udpServer = new UdpClient(udpListenPort);
+                
                 while (true)
                 {
+                    UdpClient udpServer = new UdpClient(udpListenPort);
                     var remoteEP = new IPEndPoint(IPAddress.Any, udpListenPort);
                     var data = udpServer.Receive(ref remoteEP);
                     Console.WriteLine(remoteEP.ToString());
@@ -248,7 +249,7 @@ namespace Control_Node
                 string message = "Partners_" + subnetworkNumber + "*" + udpListenPort;
                 client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
                 //var receivedData = client.Receive(ref point);
-                WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
+                WriteLine("Otrzymano potwierdzenie partnerstwa. ");
             } 
             catch(Exception e)
             {  }
