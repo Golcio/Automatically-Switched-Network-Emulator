@@ -65,8 +65,13 @@ namespace Control_Node
             }
         }
 
-        public void RouteQuery(string pathStart, string pathEnd)
+        public void RouteQuery(string pathStart, string pathEnd, string bandwidth, string connectionID)
         {
+            WriteLine("Wyliczanie ścieżki z " + pathStart + " do " + pathEnd + " >= "
+                + bandwidth + " Mbps");
+            int intbandwidth = Int32.Parse(bandwidth);
+            float cost1 = 1 / (float)intbandwidth;
+            int cost = (int)(100000 * cost1);
             StringBuilder remotesb = new StringBuilder();
             bool ifRemoteClient = false;
             string remoteAS = null;
@@ -93,18 +98,21 @@ namespace Control_Node
                         SNPb = kvp.Key;
                 }
                 StringBuilder sb = new StringBuilder();
-                sb.Append("RouteQeury_");
+                sb.Append("RouteQuery_");
                 sb.Append(SNPa + ":");
                 sb.Append(pathStart + ",");
                 List<string> tempRoute;
+                StringBuilder snpps = new StringBuilder();
+                snpps.Append(pathStart + " ");
                 string output = null;
                 try
                 {
-                    tempRoute = localTopology.shortest_path(SNPa, SNPb);
+                    tempRoute = localTopology.shortest_path(SNPa, SNPb, cost);
                     if (tempRoute.Count > 1)
                         for (int i = 0; i < tempRoute.Count - 1; i++)
                         {
                             string[] pair = localTopology.getSNPPsPair(tempRoute[i], tempRoute[i + 1]);
+                            snpps.Append(pair[0] + " " + pair[1] + " ");
                             sb.Append(pair[0]);
                             foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
                             {
@@ -114,12 +122,14 @@ namespace Control_Node
                             sb.Append(pair[1] + ",");
                         }
                     sb.Append(pathEnd);
+                    snpps.Append(pathEnd);
                     output = sb.ToString();
                     Send(output, ccport);
+                    WriteLine("Ścieżka z " + pathStart + " do " + pathEnd + ": [" + snpps.ToString() + "]");
                 }
                 catch (Exception e)
                 {
-                    WriteLine("RC:\t\tBrak ścieżki");
+                    WriteLine("Brak ścieżki z " + pathStart + " do " + pathEnd);
                     output = "RouteQuery_NOPATH";
                     Send(output, ccport);
                 }
@@ -137,18 +147,21 @@ namespace Control_Node
                         SNPb = kvp.Key;
                 }
                 StringBuilder sb = new StringBuilder();
-                sb.Append("RouteQeury_");
+                sb.Append("RouteQuery_");
                 sb.Append(SNPa + ":");
                 sb.Append(pathStart + ",");
                 List<string> tempRoute;
+                StringBuilder snpps = new StringBuilder();
+                snpps.Append(pathStart + " ");
                 string output = null;
                 try
                 {
-                    tempRoute = localTopology.shortest_path(SNPa, SNPb);
+                    tempRoute = localTopology.shortest_path(SNPa, SNPb, cost);
                     if (tempRoute.Count > 1)
                         for (int i = 0; i < tempRoute.Count - 1; i++)
                         {
                             string[] pair = localTopology.getSNPPsPair(tempRoute[i], tempRoute[i + 1]);
+                            snpps.Append(pair[0] + " " + pair[1] + " ");
                             sb.Append(pair[0]);
                             foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
                             {
@@ -159,23 +172,33 @@ namespace Control_Node
                         }
                     sb.Append(ASend);
                     sb.Append(remotesb.ToString());
+                    snpps.Append(pathEnd);
                     output = sb.ToString();
+                    WriteLine("Wysyłam " + output + " do " + ccport);
+                    Console.ReadKey();
                     Send(output, ccport);
+                    WriteLine("Ścieżka z " + pathStart + " do " + pathEnd + ": [" + snpps.ToString() + "]");
                 }
                 catch (Exception e)
                 {
-                    WriteLine("RC:\t\tBrak ścieżki");
                     output = "RouteQuery_NOPATH";
                     Send(output, ccport);
+                    WriteLine("Brak ścieżki z " + pathStart + " do " + pathEnd);
                 }
             }
         }
 
-        public void LocalTopology(string SNPPa, string SNPPb, string cost)
+        public void ConnectionBroken(string SNPPa, string SNPPb)
         {
-            localTopology.updateLinkConnection(SNPPa, SNPPb, cost);
+            localTopology.breakLinkConnection(SNPPa, SNPPb);
+            WriteLine("Aktualizacja topologii: zerwane połączenie " + SNPPa + " - " + SNPPb);
         }
-        
+
+        public void ConnectionRestored(string SNPPa, string SNPPb)
+        {
+            localTopology.restoreLinkConnection(SNPPa, SNPPb);
+            WriteLine("Aktualizacja topologii: przywrócone połączenie " + SNPPa + " - " + SNPPb);
+        }
 
         public void NetworkTopologyIn(string SNPid)
         {
@@ -194,6 +217,12 @@ namespace Control_Node
             sb.Append("NetworkTopologyOut_" + subnetworknumber + "_");
             sb.Append(networkTopologyString);
             Send(sb.ToString(), remoteRCsPorts[SNPid]);
+            string domain = null;
+            if (subnetworknumber.Equals("10"))
+                domain = "AS 1";
+            else if (subnetworknumber.Equals("11"))
+                domain = "AS 2";
+            WriteLine("Wysylam topologię do " + domain);
         }
 
         public void Send(String message, String destination)
@@ -212,21 +241,12 @@ namespace Control_Node
             {
                 exception_thrown = true;
             }
-            if (exception_thrown == false)
-            {
-                WriteLine("RC: Wysłano:\t" + message);
-            }
-            else
-            {
-                exception_thrown = false;
-                WriteLine("RC:\tNie udało się wysłać żądania");
-            }
         }
         
         public static void WriteLine(String text)
         {
             Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine(GetTimestamp(DateTime.Now) + "\t" + text);
+            Console.WriteLine(GetTimestamp(DateTime.Now) + "\tRC: " + text);
         }
 
         public static String GetTimestamp(DateTime value)

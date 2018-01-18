@@ -13,6 +13,7 @@ namespace Control_Node
         Dictionary<string, List<string>> SNPPs = new Dictionary<string, List<string>>();
         public Dictionary<string, string> clientsSNPPs = new Dictionary<string, string>();
         public Dictionary<string, string> outputSNPPs = new Dictionary<string, string>();
+        public Dictionary<string[], int> brokenConnections = new Dictionary<string[], int>();
 
         public void create()
         {
@@ -24,7 +25,7 @@ namespace Control_Node
             }
         }
 
-        public void updateLinkConnection(string SNPPa, string SNPPb, string cost)
+        public void breakLinkConnection(string SNPPa, string SNPPb)
         {
             string SNPa = null;
             string SNPb = null;
@@ -35,8 +36,30 @@ namespace Control_Node
                 if (kvp.Value.Contains(SNPPb))
                     SNPb = kvp.Key;
             }
+            int currentCost = vertices[SNPa][SNPb];
+            string[] connection = new string[2];
+            connection[0] = SNPa;
+            connection[1] = SNPb;
+            brokenConnections.Add(connection, currentCost);
+            vertices[SNPa][SNPb] = 9999;
+        }
 
-            vertices[SNPa][SNPb] = Int32.Parse(cost);
+        public void restoreLinkConnection(string SNPPa, string SNPPb)
+        {
+            string SNPa = null;
+            string SNPb = null;
+            foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
+            {
+                if (kvp.Value.Contains(SNPPa))
+                    SNPa = kvp.Key;
+                if (kvp.Value.Contains(SNPPb))
+                    SNPb = kvp.Key;
+            }
+            foreach (KeyValuePair<string[], int> kvp in brokenConnections)
+            {
+                if (kvp.Key[0].Equals(SNPa) && kvp.Key[1].Equals(SNPb))
+                    vertices[SNPa][SNPb] = kvp.Value;
+            }
         }
 
         public void addLinkConnection(string[] lc)
@@ -64,7 +87,7 @@ namespace Control_Node
             return SNPPs;
         }
 
-        public List<string> shortest_path(string start, string finish)
+        public List<string> shortest_path(string start, string finish, int maxcost)
         {
             var previous = new Dictionary<string, string>();
             var distances = new Dictionary<string, int>();
@@ -112,7 +135,7 @@ namespace Control_Node
                 foreach (var neighbor in vertices[smallest])
                 {
                     var alt = distances[smallest] + neighbor.Value;
-                    if (alt < distances[neighbor.Key])
+                    if (alt < distances[neighbor.Key] && alt <= maxcost)
                     {
                         distances[neighbor.Key] = alt;
                         previous[neighbor.Key] = smallest;
@@ -139,7 +162,7 @@ namespace Control_Node
                 this.SNPa = SNPa;
                 this.SNPb = SNPb;
                 float cost1 = 1 / (float)bandwidth;
-                cost = (int)(1000 * cost1);
+                cost = (int)(100000 * cost1);
             }
         }
     }

@@ -82,7 +82,6 @@ namespace Control_Node
                 {
                     receive_byte_array = listener.Receive(ref groupEP);
                     received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
-                    Control_Node.RoutingController.WriteLine("RC: Otrzymano:\t" + received_data);
                     string[] splitArray = received_data.Split('_');
                     if (splitArray[0].Equals("NetworkTopologyIn"))
                     {
@@ -91,14 +90,27 @@ namespace Control_Node
                     else if (splitArray[0].Equals("NetworkTopologyOut"))
                     {
                         ShortTopology.ShortTopologyParse(splitArray[2], splitArray[1], routingController);
+                        string domain = null;
+                        if (splitArray[1].Equals("10"))
+                            domain = "AS 1";
+                        else if (splitArray[1].Equals("11"))
+                            domain = "AS 2";
+                        Control_Node.RoutingController.WriteLine("Otrzymano topologię " + domain);
                     }
                     else if (splitArray[0].Equals("RouteQuery"))
                     {
-                        routingController.RouteQuery(splitArray[1], splitArray[2]);
+                        string[] splitArray2 = splitArray[1].Split('*');
+                        string bandwidth = splitArray2[1];
+                        string[] splitArray3 = splitArray2[0].Split(',');
+                        routingController.RouteQuery(splitArray3[0], splitArray3[1], splitArray3[2], bandwidth);
                     }
-                    else if (splitArray[0].Equals("LocalTopology"))
+                    else if (splitArray[0].Equals("ConnectionBroken"))
                     {
-                        routingController.LocalTopology(splitArray[1], splitArray[2], splitArray[3]);
+                        routingController.ConnectionBroken(splitArray[1], splitArray[2]);
+                    }
+                    else if (splitArray[0].Equals("ConnectionRestored"))
+                    {
+                        routingController.ConnectionBroken(splitArray[1], splitArray[2]);
                     }
                 }
             }
