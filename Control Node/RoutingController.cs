@@ -14,7 +14,7 @@ namespace Control_Node
         public RemoteTopology remoteTopology = new RemoteTopology();
         Dictionary<string, string> remoteRCsPorts = new Dictionary<string, string>();
         string subnetworknumber;
-        string ccport;
+        public string ccport;
 
         public RoutingController(string id)
         {
