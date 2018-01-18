@@ -15,8 +15,13 @@ namespace Control_Node
         static string ccport;
         static string rcport;
         static string lrmport;
+        static int parentPort;
+        static int partnerPort;
         static RoutingController routingController;
         static Dictionary<String, int> controllers = new Dictionary<String, int>();
+        static int ccportINT;
+        static int rcportINT;
+        
         static void Main(string[] args)
         {
             WriteMenu();
@@ -52,11 +57,14 @@ namespace Control_Node
         {
             Console.Title = "Control Node " + subnetworknumber;
             routingController = new RoutingController(subnetworknumber.ToString());
-            new ControlParser("controlconfig" + subnetworknumber + ".txt", subnetworknumber, ref ccport, ref rcport, controllers, routingController);           
+            new ControlParser("controlconfig" + subnetworknumber + ".txt", subnetworknumber, ref ccport, ref rcport, controllers, routingController, ref partnerPort, ref parentPort);           
             Thread connectioncontrollerthread = new Thread(() => ConnectionController());
             Thread routingcontrollerthread = new Thread(() => RoutingController());
             connectioncontrollerthread.Start();
             routingcontrollerthread.Start();
+            Int32.TryParse(ccport, out ccportINT);
+            Int32.TryParse(rcport, out rcportINT);
+            ConnectionController connectionController = new ConnectionController(ccportINT, subnetworknumber, rcportINT, partnerPort, parentPort);
         }
 
         public static void ConnectionController()

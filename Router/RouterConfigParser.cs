@@ -9,7 +9,7 @@ namespace Router
 {
     class RouterConfigParser
     {
-        public RouterConfigParser(string filename, int routernumber, ref string port, ref string cloudport, ref string ccport, ref string higherccport, ref string lrmport, ref string lrmtolrmport, Dictionary<string, string> nextlrms, List<string> labelpool)
+        public RouterConfigParser(string filename, int routernumber, ref string port, ref string cloudport, ref string ccport, ref string higherccport, ref string lrmport, ref string lrmtolrmport, Dictionary<string, string> nextlrms, List<string> labelpool, ref string rcport)
         {
             try
             {
@@ -39,6 +39,8 @@ namespace Router
                             currentParsing = "nextlrms";
                         else if (line.Equals("labelpool"))
                             currentParsing = "labelpool";
+                        else if (line.Equals("RC"))
+                            currentParsing = "RC";
                         else
                         {
                             if (currentParsing.Equals("address"))
@@ -73,6 +75,10 @@ namespace Router
                             else if (currentParsing.Equals("labelpool"))
                             {
                                 labelpool.Add(line);
+                            }
+                            else if (currentParsing.Equals("RC"))
+                            {
+                                rcport = line;
                             }
 
                         }

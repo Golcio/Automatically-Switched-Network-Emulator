@@ -15,6 +15,7 @@ namespace Router
         static string cloudport;
         static string ccport;
         static string higherccport;
+        static string rcport;
         static int routernumber;
         static string ip = "127.0.0.1";
         static Queue<byte[]> packetQueue = new Queue<byte[]>();
@@ -63,8 +64,8 @@ namespace Router
         private static void StartRouter()
         {
             Console.Title = "networkNode" + routernumber;
-            new RouterConfigParser("config" + routernumber + ".txt", routernumber, ref port, ref cloudport, ref ccport, ref higherccport, ref lrmport, ref lrmtolrmport, nextlrms, labelpool);
-            new RouterAgentLRM(lrmport, lrmtolrmport, ccport, nextlrms, labelpool);
+            new RouterConfigParser("config" + routernumber + ".txt", routernumber, ref port, ref cloudport, ref ccport, ref higherccport, ref lrmport, ref lrmtolrmport, nextlrms, labelpool, ref rcport);
+            new RouterAgentLRM(lrmport, lrmtolrmport, ccport, nextlrms, labelpool, rcport);
             try
             {
 

@@ -21,11 +21,13 @@ namespace Router
         static Random rnd = new Random();
         static string lrmtolrmport;
         static string ccport;
+        static string rcport;
 
-        public RouterAgentLRM(string lrmport, string lrmtolrmport, string ccport, Dictionary<string, string> nextlrms, List<string> labelpool)
+        public RouterAgentLRM(string lrmport, string lrmtolrmport, string ccport, Dictionary<string, string> nextlrms, List<string> labelpool, string rcport)
         {
             RouterAgentLRM.lrmtolrmport = lrmtolrmport;
             RouterAgentLRM.ccport = ccport;
+            RouterAgentLRM.rcport = rcport;
             listener = new UdpClient(Int32.Parse(lrmport));
             groupEP = new IPEndPoint(IPAddress.Any, Int32.Parse(lrmport));
             listener2 = new UdpClient(Int32.Parse(lrmtolrmport));
@@ -33,6 +35,7 @@ namespace Router
             sender = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             RouterAgentLRM.nextlrms = new Dictionary<string, string>(nextlrms);
             RouterAgentLRM.labelpool = new List<string>(labelpool);
+            Router.RouterMain.WriteLine("Link Resource Manager Utworzony.");
         }
 
         public static void LRMStart(List<String[]> switchTables)
@@ -83,6 +86,17 @@ namespace Router
                         Send("LinkConnectionConfirmation", splitArray[2]);
                         label1 = splitArray[1];
                     }
+                    else if(splitArray[0].Equals("ConnectionBroken"))
+                    {
+                        Router.RouterMain.WriteLine("LRM: Zerwano połączenie pomiędzy interfejsem " + splitArray[1].Split('/')[1] + " routera " + splitArray[1].Split('.')[0] + " i interfejsem " + splitArray[2].Split('/')[1] + " routera " + splitArray[2].Split('.')[0] + ".");
+                        Send(received_data, rcport);
+                    }
+                    else if (splitArray[0].Equals("ConnectionRestored"))
+                    {
+                        Router.RouterMain.WriteLine("LRM: Naprawiono połączenie pomiędzy interfejsem " + splitArray[1].Split('/')[1] + " routera " + splitArray[1].Split('.')[0] + " i interfejsem " + splitArray[2].Split('/')[1] + " routera " + splitArray[2].Split('.')[0] + ".");
+                        Send(received_data, rcport);
+                    }
+
                     //warunek pozwalający zestawić połączenie czyli dodać linijkę do tablicy komutacji
                     if (label1 != null && label2 != null)
                     {
@@ -92,6 +106,7 @@ namespace Router
                         port1 = null;
                         port2 = null;
                         Send("LinkConnectionRequestConfirm_" + connectionid, ccport);
+                        Router.RouterMain.WriteLine("LRM: Zestawiono połączenie nr " + connectionid);
                     }
                 }
             }

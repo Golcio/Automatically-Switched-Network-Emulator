@@ -1,5 +1,9 @@
 CC
-14110
+16001
+CCPartner
+16003
+ParentPort
+17000
 ConnectionControllers
 controler1_14101
 controler5_14105

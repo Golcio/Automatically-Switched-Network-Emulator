@@ -9,7 +9,7 @@ namespace Control_Node
 {
     class ControlParser
     {
-        public ControlParser(string filename, int subnetworknumber, ref string ccport, ref string rcport, Dictionary<String, int> controllers, RoutingController rc)
+        public ControlParser(string filename, int subnetworknumber, ref string ccport, ref string rcport, Dictionary<String, int> controllers, RoutingController rc, ref int partnerPort, ref int parentPort)
         {
             try
             {
@@ -25,6 +25,10 @@ namespace Control_Node
                     {
                         if (line.Equals("CC"))
                             currentParsing = "CC";
+                        else if (line.Equals("PartnerPort"))
+                            currentParsing = "PartnerPort";
+                        else if (line.Equals("ParentPort"))
+                            currentParsing = "ParentPort";
                         else if (line.Equals("ConnectionControllers"))
                             currentParsing = "ConnectionControllers";
                         else if (line.Equals("RC"))
@@ -42,6 +46,18 @@ namespace Control_Node
                             if (currentParsing.Equals("CC"))
                             {
                                 ccport = line;
+                            }
+                            else if (currentParsing.Equals("PartnerPort"))
+                            {
+                                int port;
+                                Int32.TryParse(line, out port);
+                                partnerPort = port;
+                            }
+                            else if (currentParsing.Equals("ParentPort"))
+                            {
+                                int port;
+                                Int32.TryParse(line, out port);
+                                parentPort = port;
                             }
                             else if (currentParsing.Equals("ConnectionControllers"))
                             {
