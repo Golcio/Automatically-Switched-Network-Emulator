@@ -67,6 +67,7 @@ namespace Control_Node
 
         public void RouteQuery(string pathStart, string pathEnd, string bandwidth, string connectionID)
         {
+            WriteLine(connectionID);
             WriteLine("Wyliczanie ścieżki z " + pathStart + " do " + pathEnd + " >= " + bandwidth + " Mbps");
             int intbandwidth = Int32.Parse(bandwidth);
             float cost1 = 1 / (float)intbandwidth;
@@ -129,6 +130,7 @@ namespace Control_Node
                             sb.Append(pair[1] + ",");
                         }
                     sb.Append(pathEnd);
+                    sb.Append("*" + connectionID);
                     snpps.Append(pathEnd);
                     output = sb.ToString();
                     WriteLine("Ścieżka z " + pathStart + " do " + pathEnd + ": [" + snpps.ToString() + "]");
@@ -137,7 +139,7 @@ namespace Control_Node
                 catch (Exception e)
                 {
                     WriteLine("Brak ścieżki z " + pathStart + " do " + pathEnd);
-                    output = "RouteQuery_NOPATH";
+                    output = "RouteQuery_NOPATH*" + connectionID;
                     Send(output, ccport);
                 }
             }
@@ -179,6 +181,7 @@ namespace Control_Node
                         }
                     sb.Append(ASend);
                     sb.Append(remotesb.ToString());
+                    sb.Append("*" + connectionID);
                     snpps.Append(pathEnd);
                     output = sb.ToString();
                     WriteLine("Ścieżka z " + pathStart + " do " + pathEnd + ": [" + snpps.ToString() + "]");
@@ -186,7 +189,7 @@ namespace Control_Node
                 }
                 catch (Exception e)
                 {
-                    output = "RouteQuery_NOPATH";
+                    output = "RouteQuery_NOPATH*" + connectionID;
                     Send(output, ccport);
                     WriteLine("Brak ścieżki z " + pathStart + " do " + pathEnd);
                 }
