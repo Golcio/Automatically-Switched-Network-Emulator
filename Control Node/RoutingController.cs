@@ -131,8 +131,8 @@ namespace Control_Node
                     sb.Append(pathEnd);
                     snpps.Append(pathEnd);
                     output = sb.ToString();
-                    Send(output, ccport);
                     WriteLine("Ścieżka z " + pathStart + " do " + pathEnd + ": [" + snpps.ToString() + "]");
+                    Send(output, ccport);
                 }
                 catch (Exception e)
                 {
@@ -181,8 +181,8 @@ namespace Control_Node
                     sb.Append(remotesb.ToString());
                     snpps.Append(pathEnd);
                     output = sb.ToString();
-                    Send(output, ccport);
                     WriteLine("Ścieżka z " + pathStart + " do " + pathEnd + ": [" + snpps.ToString() + "]");
+                    Send(output, ccport);
                 }
                 catch (Exception e)
                 {
