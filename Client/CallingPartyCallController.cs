@@ -48,11 +48,11 @@ namespace Client
                     {
                         CallAccept(splitArray[1]);
                     }
-                    if (splitArray[0].Equals("CallRequest"))
+                    if (splitArray[0].Equals("CallConfirmed"))
                     {
                         if (splitArray[1].Equals("YES"))
                         {
-                            mainWindow.connectedProcedure(splitArray[2], splitArray[3]);
+                            mainWindow.connectedProcedure(splitArray[2]);
                         }
                         else
                         {

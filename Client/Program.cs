@@ -25,9 +25,12 @@ namespace ClientTSST8
             //Thread agentReceiverThread = new Thread(()=> agent.agentReceiver(reader.getChosenDefinition()[0]));
             //agentReceiverThread.Start();
             Sender sender = new Sender("127.0.0.1", reader.getChosenDefinition()[4]);
-            MainWindow mainWindow = new MainWindow(sender, reader);
+            string cpccinput = reader.getChosenDefinition()[5];
+            string nccport = reader.getChosenDefinition()[6];
+            string myid = reader.getChosenDefinition()[0];
 
-            CallingPartyCallController cpcc = new CallingPartyCallController(reader.getChosenDefinition()[5], reader.getChosenDefinition()[6], reader.getChosenDefinition()[0], mainWindow);
+
+            MainWindow mainWindow = new MainWindow(sender, reader, cpccinput, nccport, myid);
             Receiver receiver = new Receiver("127.0.0.1", reader.getChosenDefinition()[3], mainWindow);
 
             Thread receiverThread = new Thread(() => receiver.receive());

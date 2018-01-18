@@ -111,9 +111,16 @@ namespace Cable_Cloud
                         Array.Copy(buffer, receivedData, readByte);
 
                         byte[] interfaceByte = new byte[4];
-                        for (int i = 0; i < 4; i++)
+                        try
                         {
-                            interfaceByte[i] = receivedData[i];
+                            for (int i = 0; i < 4; i++)
+                            {
+                                interfaceByte[i] = receivedData[i];
+                            }
+                        }
+                        catch (Exception e)
+                        {
+                            break;
                         }
                         int interfaceNumber = BitConverter.ToInt32(interfaceByte, 0);
 
