@@ -1,6 +1,6 @@
 CC
 16001
-CCPartner
+PartnerPort
 16003
 ParentPort
 17000

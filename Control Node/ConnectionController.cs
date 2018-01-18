@@ -35,6 +35,8 @@ namespace Control_Node
             this.parentPort = parentPort;
             FamilyTies();
             Partners(subnetworkNumber.ToString());
+            Console.WriteLine("udpListenPort: " + udpListenPort);
+            Console.WriteLine("snpnumber: " + subnetworkNumber);
             //dwa podstawowe wątki, czyli odbieranie żądań i analizowanie ich.
             Thread receiveThread = new Thread(() => receiving());
             receiveThread.Start();

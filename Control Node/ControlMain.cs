@@ -68,7 +68,7 @@ namespace Control_Node
             if (subnetworknumber == 10)
             {
                 Thread.Sleep(20000);
-                routingController.Send("ConnectionRequest_C1,C2,70*1", routingController.ccport);
+                routingController.Send("ConnectionRequest_C1,C2,5*1", routingController.ccport);
             }
         }
 
