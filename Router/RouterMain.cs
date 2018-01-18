@@ -18,6 +18,8 @@ namespace Router
         static string rcport;
         static int routernumber;
         static string ip = "127.0.0.1";
+        static int ccportINT;
+        static int parentPort;
         static Queue<byte[]> packetQueue = new Queue<byte[]>();
         static RouterSwitcher switcher;
         static List<String[]> switchTables = new List<string[]>();
@@ -64,8 +66,9 @@ namespace Router
         private static void StartRouter()
         {
             Console.Title = "networkNode" + routernumber;
-            new RouterConfigParser("config" + routernumber + ".txt", routernumber, ref port, ref cloudport, ref ccport, ref higherccport, ref lrmport, ref lrmtolrmport, nextlrms, labelpool, ref rcport);
+            new RouterConfigParser("config" + routernumber + ".txt", routernumber, ref port, ref cloudport, ref ccport, ref higherccport, ref lrmport, ref lrmtolrmport, nextlrms, labelpool, ref rcport, ref ccportINT, ref parentPort);
             new RouterAgentLRM(lrmport, lrmtolrmport, ccport, nextlrms, labelpool, rcport);
+            RouterConnectionController connectionController = new RouterConnectionController(routernumber, ccportINT);
             try
             {
 
@@ -74,6 +77,7 @@ namespace Router
 
                 sender.senderThread(packetQueue);
                 receiver.socketReceive(packetQueue, switchTables);
+                
             }
             catch (SocketException ex)
             {

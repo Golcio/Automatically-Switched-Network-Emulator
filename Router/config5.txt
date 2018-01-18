@@ -3,9 +3,9 @@ address
 cloud
 14015
 ConnectionControler
-14105
+18005
 higherCC
-14110
+16001
 lrm
 14505
 lrmtolrm
@@ -22,3 +22,7 @@ labelpool
 25
 RC
 14210
+CC
+18005
+ParentPort
+16001
