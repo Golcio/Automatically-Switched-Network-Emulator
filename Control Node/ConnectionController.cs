@@ -146,7 +146,7 @@ namespace Control_Node
                         case "BreakConnection":
                             //idzie z dołu
                             czyBreak = true;
-                            WriteRedLine("Wyjebało nam połączenie nr " + connectionORportNumber);
+                            WriteRedLine("Połączenie numer " + connectionORportNumber + " zostało zerwane. Prawdopodobnie jest to wina koparki. ");
                             BreakConnectionReact(restMessage, connectionORportNumber);
                             break;
                         case "Disconnection":
