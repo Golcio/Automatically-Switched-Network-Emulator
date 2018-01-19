@@ -140,7 +140,7 @@ namespace Router
             string[] splitarray = points.Split(',');
             foreach (KeyValuePair<string, string> kvp in nextlrms)
             {
-                if (kvp.Key == splitarray[1])
+                if (kvp.Key == splitarray[1] && kvp.Value != "0")
                 {
                     nextlrm = kvp.Value;
 
