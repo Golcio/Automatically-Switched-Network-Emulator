@@ -70,7 +70,7 @@ namespace DiggerSimulator
                         this.Invoke(inv);
                         writeToConsole("Łącze " + splitArray[1] + "-" + splitArray[2] + " zostało zniszczone.");
                     }
-                    else if (splitArray[0].Equals("ConnectionRestored"))
+                    else if (splitArray[0].Equals("RestoreConnection"))
                     {
                         string[] connection = new string[2];
                         connection[0] = splitArray[1];

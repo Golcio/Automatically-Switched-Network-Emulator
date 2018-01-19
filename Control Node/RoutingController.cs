@@ -135,6 +135,13 @@ namespace Control_Node
                             sb.Append(pair[1] + ",");
                             snpps.Append(pair[1] + " ");
                         }
+                    else
+                    {
+                        WriteLine("Brak ścieżki.");
+                        output = "RouteTableQuery_NOPATH*" + connectionID;
+                        Send(output, ccport);
+                        return;
+                    }
                     sb.Append(pathEnd);
                     sb.Append("*" + connectionID);
                     snpps.Append(pathEnd);
@@ -186,6 +193,13 @@ namespace Control_Node
                             sb.Append(pair[1] + ",");
                             snpps.Append(pair[1] + " ");
                         }
+                    else
+                    {
+                        output = "RouteTableQuery_NOPATH*" + connectionID;
+                        WriteLine("Brak ścieżki.");
+                        Send(output, ccport);
+                        return;
+                    }
                     sb.Append(ASend);
                     tempRemoteSNPPs[0] = ASend;
                     sb.Append(remotesb.ToString());

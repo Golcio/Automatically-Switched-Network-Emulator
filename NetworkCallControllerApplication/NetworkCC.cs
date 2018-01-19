@@ -142,14 +142,21 @@ namespace NetworkCallControllerApplication
                     }
                     else if (splitArray[0].Equals("CallTeardown"))
                     {
+                        string connectionToRemove = null;
                         foreach (KeyValuePair<string, string[]> kvp in connectionsIDs)
                         {
                             if (kvp.Value[0].Equals(source_address) && kvp.Value[1].Equals(destination_address))
                             {
-                                connectionsIDs.Remove(connection_number);
-                                capacities.Remove(connection_number);
+                                string number = kvp.Key;
+                                connectionToRemove = number;
                             }
                         }
+                        if (connectionToRemove != null)
+                        {
+                            connectionsIDs.Remove(connectionToRemove);
+                            capacities.Remove(connectionToRemove);
+                        }
+                        ConnectionTeardown(ccport, connectionToRemove);
                     }
                     else if (splitArray[0].Equals("NetworkCallCoordinationOUT"))
                     {
@@ -258,10 +265,10 @@ namespace NetworkCallControllerApplication
             string message = messagesb.ToString();
             Send(message, destination_port);
         }
-        public void ConnectionTeardown(string sourceid, string destinationid, string ccport, string connection_number)
+        public void ConnectionTeardown(string ccport, string connection_number)
         {
             StringBuilder messagesb = new StringBuilder();
-            messagesb.Append("ConnectionTeardown_" + sourceid + "," + destinationid + "*" + connection_number);
+            messagesb.Append("Disconnection_ *" + connection_number);
             string message = messagesb.ToString();
             Send(message, ccport);
         }

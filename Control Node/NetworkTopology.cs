@@ -134,11 +134,22 @@ namespace Control_Node
 
                 foreach (var neighbor in vertices[smallest])
                 {
+                    /*
                     var alt = distances[smallest] + neighbor.Value;
                     if (alt < distances[neighbor.Key] && alt <= maxcost)
                     {
                         distances[neighbor.Key] = alt;
                         previous[neighbor.Key] = smallest;
+                    }
+                    */
+                    if (neighbor.Value <= maxcost)
+                    {
+                        var alt = distances[smallest] + neighbor.Value;
+                        if (alt < distances[neighbor.Key])
+                        {
+                            distances[neighbor.Key] = alt;
+                            previous[neighbor.Key] = smallest;
+                        }
                     }
                 }
             }
