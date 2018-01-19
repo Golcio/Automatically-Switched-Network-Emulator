@@ -26,6 +26,7 @@ namespace Control_Node
         int udpListenPort, subnetworkNumber, RCPort, partnerPort, parentPort;
         //int - numer połączenia, string - numer podsieci, bool - czy doszło potwierdzenie
         Dictionary<int, Dictionary<string, bool>> connections = new Dictionary<int, Dictionary<string, bool>>();
+        Dictionary<string, string> connectionsSNPPs = new Dictionary<string, string>(); 
         Dictionary<string, string> capacity = new Dictionary<string, string>();
         Dictionary<string, string> confirmations = new Dictionary<string, string>();
 
@@ -107,6 +108,8 @@ namespace Control_Node
                             break;
                         case "ConnectionRequest":
                             WriteLine("Otrzymano ConnectionRequest.");
+                            if (!connectionsSNPPs.ContainsKey(connectionORportNumber))
+                                connectionsSNPPs.Add(connectionORportNumber, restMessage);
                             capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
                             confirmations.Add(connectionORportNumber, "parent");
                             //restMessage: punkt1,punkt2,przepustowosc
@@ -127,14 +130,83 @@ namespace Control_Node
                             WriteLine("Otrzymano ConnectionConfirmation.");
                             ConfirmationsController(restMessage, connectionORportNumber);
                             break;
-                        case "BreakConnection ":
+                        case "BreakConnection":
+                            //idzie z dołu
                             WriteRedLine("Wyjebało nam połączenie nr " + connectionORportNumber);
+                            BreakConnectionReact(restMessage, connectionORportNumber);
                             break;
-                        case "koniec połączenia":
+                        case "Disconnection":
+                            //idzie z gory
+                            WriteLine("Rozpoczęto procedurę zwalniania połączenia numer " + connectionORportNumber);
+                            Disconnection(connectionORportNumber);
+                            break;
+                        case "DisconnectionConfirmation":
+                            WriteLine("Otrzymano potwierdzenie zwolnienia połączenia numer " + connectionORportNumber);
+                            DisconnectionsController(restMessage, connectionORportNumber);
                             break;
                     }
                 }
                 Thread.Sleep(50);
+            }
+        }
+
+        void BreakConnectionReact(string restMessage, string connectionNumber)
+        {
+            string subnetworkNumber = restMessage;
+            if (subnetworkNumber.Equals("10") || subnetworkNumber.Equals("11"))
+            {
+                WriteLine("Rozpoczęto procedurę zwalniania połączenia numer " + connectionNumber);
+                Disconnection(connectionNumber);
+            }
+            else
+            {
+                var client = new UdpClient();
+                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
+                client.Connect(point);
+                string message = "BreakConnection_" + subnetworkNumber + "*" + connectionNumber;
+                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                //var receivedData = client.Receive(ref point);
+                WriteLine("Wysłano alert o zerwanym połączeniu numer " + connectionNumber + " w podsieci numer " + subnetworkNumber);
+            }
+            
+        }
+        void Disconnection(string connectionNumber)
+        {
+            int connectionNumb, port;
+            Int32.TryParse(connectionNumber, out connectionNumb);
+            foreach (KeyValuePair<int, Dictionary<string, bool>> kvp in connections)
+            {
+                if(kvp.Key == connectionNumb)
+                {
+                    foreach(KeyValuePair<string, bool> kvpC in connections[connectionNumb])
+                    {
+                        foreach(KeyValuePair<string, string> kvpCC in children)
+                        {
+                            if(kvpC.Key.Equals(kvpCC.Key))
+                            {
+                                Int32.TryParse(kvpCC.Value, out port);
+                                var client = new UdpClient();
+                                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+                                client.Connect(point);
+                                string message = "Disconnection" + " " + "*" + connectionNumber;
+                                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                            }
+                        }
+                        foreach(KeyValuePair<string, string> kvpP in partners)
+                        {
+                            if(kvpC.Key.Equals(kvpP.Key))
+                            {
+                                Int32.TryParse(kvpP.Value, out port);
+                                var client = new UdpClient();
+                                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
+                                client.Connect(point);
+                                string message = "Disconnection" + " " + "*" + connectionNumber;
+                                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                            }
+                        }
+                    }
+                    
+                }
             }
         }
 
@@ -154,6 +226,59 @@ namespace Control_Node
                 ConnectionConfirmation(connectionNumber);
         }
 
+        void DisconnectionsController(string restMessage, string connectionNumber)
+        {
+            string subnetworkNumber = restMessage;
+            Int32.TryParse(connectionNumber, out int connectionNumb);
+            connections[connectionNumb][subnetworkNumber] = false;
+            WriteLine("Otrzymano potwierdzenie zwolnienia połączenia numer " + connectionNumber + " od CC w podsieci numer " + subnetworkNumber);
+            int confirmations = connections[connectionNumb].Count;
+            foreach (KeyValuePair<string, bool> kvp in connections[connectionNumb])
+            {
+                if (kvp.Value == false)
+                    confirmations--;
+            }
+            if (confirmations == 0 )
+            {
+                if (subnetworkNumber.Equals("10") || subnetworkNumber.Equals("11"))
+                {
+                    ConnectionRequest(connectionsSNPPs[connectionNumber], connectionNumber);
+                }
+                else
+                    DisconnectionConfirmation(connectionNumber);
+            }
+                
+        }
+
+        void DisconnectionConfirmation(string connectionNumber)
+        {
+            string port = " ";
+            foreach (KeyValuePair<string, string> kvp in confirmations)
+            {
+                if (kvp.Key.Equals(connectionNumber))
+                    port = kvp.Value;
+            }
+            if (port.Equals("parent"))
+            {
+                var client = new UdpClient();
+                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
+                client.Connect(point);
+                string message = "DisconnectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
+                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                //var receivedData = client.Receive(ref point);
+                WriteLine("Wysłano potwierdzenie zwolnienia połączenia o numerze " + connectionNumber);
+            }
+            else if (port.Equals("partner"))
+            {
+                var client = new UdpClient();
+                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), partnerPort);
+                client.Connect(point);
+                string message = "DisconnectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
+                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                //var receivedData = client.Receive(ref point);
+                WriteLine("Wysłano potwierdzenie zwolnienia połączenia o numerze " + connectionNumber);
+            }
+        }
         void ConnectionConfirmation(string connectionNumber)
         {
             string port = " ";
