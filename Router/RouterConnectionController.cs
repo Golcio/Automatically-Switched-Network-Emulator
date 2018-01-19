@@ -41,9 +41,8 @@ namespace Router
             {
                 var remoteEP = new IPEndPoint(IPAddress.Any, udpListenPort);
                 var data = udpServer.Receive(ref remoteEP);
-                Console.WriteLine(remoteEP.ToString());
                 Buffor.Push(Encoding.UTF8.GetString(data));
-                Console.WriteLine("Otrzymano wiadomosc o tresci " + Encoding.UTF8.GetString(data));
+                WriteLine("Otrzymano wiadomosc o tresci " + Encoding.UTF8.GetString(data));
                 string response = "200 OK";
                 udpServer.Send(Encoding.UTF8.GetBytes(response), Encoding.UTF8.GetBytes(response).Length, remoteEP);
             }
@@ -66,7 +65,7 @@ namespace Router
                     switch (messageType)
                     {
                         case "ConnectionRequest":
-                            Console.WriteLine("Otrzymano ConnectionRequest.");
+                            WriteLine("Otrzymano ConnectionRequest.");
                             LinkConnectionRequest(restMessage, connectionORportNumber);
                             break;
                         case "LinkConnectionRequestConfirm":
@@ -86,8 +85,6 @@ namespace Router
             client.Connect(point);
             string message = "ConnectionConfirmation_" + restMessage + "*" + connectionNumber;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            //var receivedData = client.Receive(ref point);
-            Console.WriteLine("Otrzymano potwierdzenie wysłania ConnectionConfirmation.");
         }
         //Jeżeli CC jest CC routerowym to wtedy ConnectionRequest przesyłane jest do LRMa, 
         //który ma za zadanie zestawić połączenie.
@@ -98,8 +95,6 @@ namespace Router
             client.Connect(point);
             string message = "LinkConnectionRequest_" + linkRequest + "*" + connectionNumberGiven;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            //var receivedData = client.Receive(ref point);
-            Console.WriteLine("Otrzymano potwierdzenie wysłania LinkConnectionRequest.");
         }
 
         //Wysyłanie wiadomosci "elo ziom, zarządzam podsiecią nr "subnetworkNumber", 
@@ -111,10 +106,23 @@ namespace Router
             client.Connect(point);
             string message = "FamilyTies_" + subnetworkNumber.ToString() + "*" + udpListenPort.ToString();
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            //var receivedData = client.Receive(ref point);
-            Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
 
         }
-        
+
+        public static void WriteLine(String text)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine(GetTimestamp(DateTime.Now) + "\tCC: " + text);
+        }
+        public static void WriteRedLine(String text)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkRed;
+            Console.WriteLine(GetTimestamp(DateTime.Now) + "\tCC: " + text);
+        }
+        public static String GetTimestamp(DateTime value)
+        {
+            return value.ToString("yyyy/MM/dd HH:mm:ss:ffff");
+        }
+
     }
 }
