@@ -71,9 +71,20 @@ namespace Router
                             label2 = returnvalues[0];
                             port1 = returnvalues[1];
                             port2 = returnvalues[2];
-                            if(returnvalues.Length == 4)
+                            if (returnvalues.Length == 4)
                             {
                                 label1 = returnvalues[3];
+                            }
+
+                            if (label1 != null && label2 != null)
+                            {
+                                LinkConnection(port1, label1, port2, label2, switchTables);
+                                label1 = null;
+                                label2 = null;
+                                port1 = null;
+                                port2 = null;
+                                Send("LinkConnectionRequestConfirm_" + SNPPs + "*" + connectionid, ccport);
+                                Router.RouterMain.WriteLine("LRM: Zestawiono połączenie nr " + connectionid);
                             }
                         });
 
@@ -90,7 +101,7 @@ namespace Router
                         Send("LinkConnectionConfirmation", splitArray[2]);
                         label1 = splitArray[1];
                     }
-                    else if(splitArray[0].Equals("ConnectionBroken"))
+                    else if (splitArray[0].Equals("ConnectionBroken"))
                     {
                         Router.RouterMain.WriteLine("LRM: Zerwano połączenie pomiędzy interfejsem " + splitArray[1].Split('/')[1] + " routera " + splitArray[1].Split('.')[0] + " i interfejsem " + splitArray[2].Split('/')[1] + " routera " + splitArray[2].Split('.')[0] + ".");
                         Send(received_data, rcport);
