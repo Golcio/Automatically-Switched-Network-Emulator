@@ -21,11 +21,13 @@ namespace Control_Node
         //istniejące połączenia int-numer połączenia, string- numery podsieci, których CC biorą udział
         //w tym połączeniu
         //Dictionary<int, string> connections = new Dictionary<int, string>();
-        Dictionary<int, int> confirmations = new Dictionary<int, int>();
+
+        //Dictionary<int, int> confirmations = new Dictionary<int, int>();
         int udpListenPort, subnetworkNumber, RCPort, partnerPort, parentPort;
         //int - numer połączenia, string - numer podsieci, bool - czy doszło potwierdzenie
         Dictionary<int, Dictionary<string, bool>> connections = new Dictionary<int, Dictionary<string, bool>>();
         Dictionary<string, string> capacity = new Dictionary<string, string>();
+        Dictionary<string, string> confirmations = new Dictionary<string, string>();
 
         public ConnectionController(int udpListenPort, int subnetworkNumber, int RCPort, int partnerPort, int parentPort)
         {
@@ -106,6 +108,7 @@ namespace Control_Node
                         case "ConnectionRequest":
                             WriteLine("Otrzymano ConnectionRequest.");
                             capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
+                            confirmations.Add(connectionORportNumber, "parent");
                             //restMessage: punkt1,punkt2,przepustowosc
                             RouteQuery(restMessage, connectionORportNumber);
                             break;
@@ -118,6 +121,7 @@ namespace Control_Node
                             WriteLine("Otrzymano PeerCoordination.");
                             capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
                             RouteQueryAfterPeer(restMessage, connectionORportNumber);
+                            confirmations.Add(connectionORportNumber, "partner");
                             break;
                         case "ConnectionConfirmation":
                             WriteLine("Otrzymano ConnectionConfirmation.");
@@ -152,13 +156,33 @@ namespace Control_Node
 
         void ConnectionConfirmation(string connectionNumber)
         {
-            var client = new UdpClient();
-            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
-            client.Connect(point);
-            string message = "ConnectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
-            client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-            //var receivedData = client.Receive(ref point);
-            WriteLine("Wysłano ConnectionConfirmation połączenia o numerze " + connectionNumber);
+            string port = " ";
+            foreach(KeyValuePair<string, string> kvp in confirmations)
+            {
+                if (kvp.Key.Equals(connectionNumber))
+                    port = kvp.Value;
+            }
+            if(port.Equals("parent"))
+            {
+                var client = new UdpClient();
+                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
+                client.Connect(point);
+                string message = "ConnectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
+                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                //var receivedData = client.Receive(ref point);
+                WriteLine("Wysłano ConnectionConfirmation połączenia o numerze " + connectionNumber);
+            }
+            else if (port.Equals("partner"))
+            {
+                var client = new UdpClient();
+                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), partnerPort);
+                client.Connect(point);
+                string message = "ConnectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
+                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                //var receivedData = client.Receive(ref point);
+                WriteLine("Wysłano ConnectionConfirmation połączenia o numerze " + connectionNumber);
+            }
+            
         }
 
         //RC zestaw mi połączenie pomiędzy tymi dwoma punktami: w wiadomości przekazywane są dwa punkty.
