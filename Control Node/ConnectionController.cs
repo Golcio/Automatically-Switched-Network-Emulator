@@ -242,7 +242,7 @@ namespace Control_Node
                         string messageOut = "ConnectionRequest_" + restMessage + "," + capacityString + "*" + connectionNumber.ToString();
                         client.Send(Encoding.UTF8.GetBytes(messageOut), Encoding.UTF8.GetBytes(messageOut).Length);
                         //var receivedData = client.Receive(ref point);
-                        WriteLine("Wyslano ConnectionRequest do podsieci nr " + subnetwork + " o tresci " + restMessage);
+                        WriteLine("Wyslano ConnectionRequest do podsieci nr " + subnetwork + " o tresci " + messageOut);
                         connections[connectionNumber].Add(subnetwork, false);
                     }
                 }
