@@ -107,11 +107,15 @@ namespace Router
                     {
                         Router.RouterMain.WriteLine("LRM: Zerwano połączenie pomiędzy interfejsem " + splitArray[1].Split('/')[1] + " routera " + splitArray[1].Split('.')[0] + " i interfejsem " + splitArray[2].Split('/')[1] + " routera " + splitArray[2].Split('.')[0] + ".");
                         Send(received_data, rcport);
+                        Send("BreakConnection_" + " " + "*" + connectionid, ccport);
+                        Send(received_data, "14099");
                     }
                     else if (splitArray[0].Equals("RestoreConnection"))
                     {
                         Router.RouterMain.WriteLine("LRM: Naprawiono połączenie pomiędzy interfejsem " + splitArray[1].Split('/')[1] + " routera " + splitArray[1].Split('.')[0] + " i interfejsem " + splitArray[2].Split('/')[1] + " routera " + splitArray[2].Split('.')[0] + ".");
                         Send(received_data, rcport);
+                        Send("RestoreConnection_" + " " + "*" + connectionid, ccport);
+                        Send(received_data, "14099");
                     }
 
                     //warunek pozwalający zestawić połączenie czyli dodać linijkę do tablicy komutacji
