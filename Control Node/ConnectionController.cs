@@ -53,12 +53,8 @@ namespace Control_Node
                 {
                     var remoteEP = new IPEndPoint(IPAddress.Any, udpListenPort);
                     var data = udpServer.Receive(ref remoteEP);
-                    //Console.WriteLine(remoteEP.ToString());
-                    Console.WriteLine(Buffor.Count);
                     Buffor.Push(Encoding.UTF8.GetString(data));
-                    Console.WriteLine("Otrzymano wiadomosc o tresci " + Encoding.UTF8.GetString(data));
-                    string response = "200 OK";
-                    udpServer.Send(Encoding.UTF8.GetBytes(response), Encoding.UTF8.GetBytes(response).Length, remoteEP);
+                    WriteLine("Otrzymano wiadomosc o tresci " + Encoding.UTF8.GetString(data));
                 }
             }
             catch (Exception e)
@@ -69,13 +65,13 @@ namespace Control_Node
         void AddingChildren(string subnetworkNumber, string remotePort)
         {
             children.Add(subnetworkNumber, remotePort);
-            Console.WriteLine("Dodano CC z podsieci nr " + subnetworkNumber + " do zarządzanych CC.");
+            WriteLine("Dodano CC z podsieci nr " + subnetworkNumber + " do zarządzanych CC.");
         }
 
         void AddingPartners(string subnetworkNumber, string remotePort)
         {
             partners.Add(subnetworkNumber, remotePort);
-            Console.WriteLine("Dodano CC z podsieci nr " + subnetworkNumber + " do partnerujących CC.");
+            WriteLine("Dodano CC z podsieci nr " + subnetworkNumber + " do partnerujących CC.");
         }
         void analizing()
         {
@@ -113,11 +109,11 @@ namespace Control_Node
                             ConnectionRequest(restMessage, connectionORportNumber);
                             break;
                         case "PeerCoordination":
-                            Console.WriteLine("Otrzymano PeerCoordination.");
+                            WriteLine("Otrzymano PeerCoordination.");
                             RouteQuery(restMessage, connectionORportNumber);
                             break;
                         case "ConnectionConfirmation":
-                            Console.WriteLine("Otrzymano ConnectionConfirmation.");
+                            WriteLine("Otrzymano ConnectionConfirmation.");
                             ConfirmationsController(restMessage, connectionORportNumber);
                             break;
                         case "WyjebanePolaczenie":
@@ -136,7 +132,7 @@ namespace Control_Node
             string subnetworkNumber = restMessage.Split(':')[0];
             Int32.TryParse(connectionNumber, out int connectionNumb);
             connections[connectionNumb][subnetworkNumber] = true;
-            Console.WriteLine("Otrzymano potwierdzenie zestawienia połączenia numer " + connectionNumber + " od CC w podsieci numer " + subnetworkNumber);
+            WriteLine("Otrzymano potwierdzenie zestawienia połączenia numer " + connectionNumber + " od CC w podsieci numer " + subnetworkNumber);
         }
 
         //RC zestaw mi połączenie pomiędzy tymi dwoma punktami: w wiadomości przekazywane są dwa punkty.
@@ -153,8 +149,6 @@ namespace Control_Node
                     client.Connect(point);
                     string message = "RouteQuery_" + routeQuery + "*" + connectionNumber;
                     client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-                    //var receivedData = client.Receive(ref point);
-                    Console.WriteLine("Otrzymano potwierdzenie wysłania RouteQuery. ");
                 }
             }
             catch (Exception e)
@@ -176,8 +170,6 @@ namespace Control_Node
                 client.Connect(point);
                 string message = "FamilyTies_" + subnetworkNumber.ToString() + "*" + udpListenPort;
                 client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-                //var receivedData = client.Receive(ref point);
-                Console.WriteLine("Otrzymano potwierdzenie wysłania FamilyTies. ");
             }
             catch (Exception e)
             {
@@ -224,8 +216,8 @@ namespace Control_Node
                         client.Connect(point);
                         string messageOut = "ConnectionRequest_" + restMessage + "," + capacityString + "*" + connectionNumber.ToString();
                         client.Send(Encoding.UTF8.GetBytes(messageOut), Encoding.UTF8.GetBytes(messageOut).Length);
-                        var receivedData = client.Receive(ref point);
-                        Console.WriteLine("Wyslano ConnectionRequest do podsieci nr " + subnetwork + " o tresci " + restMessage);
+                        //var receivedData = client.Receive(ref point);
+                        WriteLine("Wyslano ConnectionRequest do podsieci nr " + subnetwork + " o tresci " + restMessage);
                         connections[connectionNumber].Add(subnetwork, false);
                     }
                 }
@@ -241,8 +233,8 @@ namespace Control_Node
                         client.Connect(point);
                         string messageOut = "PeerCoordination_" + restMessage + "," + capacityString + "*" + connectionNumber.ToString();
                         client.Send(Encoding.UTF8.GetBytes(messageOut), Encoding.UTF8.GetBytes(messageOut).Length);
-                        var receivedData = client.Receive(ref point);
-                        Console.WriteLine("Wyslano PeerCoordination do podsieci nr " + subnetwork + " o tresci " + restMessage);
+                        //var receivedData = client.Receive(ref point);
+                        WriteLine("Wyslano PeerCoordination do podsieci nr " + subnetwork + " o tresci " + restMessage);
                         connections[connectionNumber].Add(subnetwork, false);
                     }
                 }
@@ -257,8 +249,6 @@ namespace Control_Node
                 client.Connect(point);
                 string message = "Partners_" + subnetworkNumber + "*" + udpListenPort;
                 client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-                //var receivedData = client.Receive(ref point);
-                WriteLine("Otrzymano potwierdzenie partnerstwa. ");
             }
             catch (Exception e)
             { }

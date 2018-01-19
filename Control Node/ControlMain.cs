@@ -111,13 +111,8 @@ namespace Control_Node
                     }
                     else if (splitArray[0].Equals("RouteQuery"))
                     {
-                        Control_Node.RoutingController.WriteLine("Cała wiadomość: " + splitArray[1]);
                         string[] splitArray2 = splitArray[1].Split('*');
                         string[] splitArray3 = splitArray2[0].Split(',');
-                        Control_Node.RoutingController.WriteLine("SNPPa: " + splitArray3[0]);
-                        Control_Node.RoutingController.WriteLine("SNPPb: " + splitArray3[1]);
-                        Control_Node.RoutingController.WriteLine("bandwidth: " + splitArray2[0]);
-                        Control_Node.RoutingController.WriteLine("ID: " + splitArray2[1]);
                         routingController.RouteQuery(splitArray3[0], splitArray3[1], splitArray3[2], splitArray2[1]);
                     }
                     else if (splitArray[0].Equals("ConnectionBroken"))

@@ -67,12 +67,12 @@ namespace Control_Node
 
         public void RouteQuery(string pathStart, string pathEnd, string bandwidth, string connectionID)
         {
-            WriteLine(connectionID);
             WriteLine("Wyliczanie ścieżki z " + pathStart + " do " + pathEnd + " >= " + bandwidth + " Mbps");
             int intbandwidth = Int32.Parse(bandwidth);
             float cost1 = 1 / (float)intbandwidth;
             int cost = (int)(100000 * cost1);
             StringBuilder remotesb = new StringBuilder();
+            string[] tempRemoteSNPPs = new string[2];
             bool ifRemoteClient = false;
             foreach (KeyValuePair <string,string> kvp in localTopology.clientsSNPPs)
             {
@@ -91,6 +91,7 @@ namespace Control_Node
                         remoteAS = kvp.Key;
                         remotesb.Append(";" + kvp.Key + ":");
                         remotesb.Append(kvp.Value.inputSNPP + "," + pathEnd);
+                        tempRemoteSNPPs[1] = kvp.Value.inputSNPP;
                         ifRemoteClient = true;
                     }
                 }
@@ -120,7 +121,7 @@ namespace Control_Node
                         for (int i = 0; i < tempRoute.Count - 1; i++)
                         {
                             string[] pair = localTopology.getSNPPsPair(tempRoute[i], tempRoute[i + 1]);
-                            snpps.Append(pair[0] + " " + pair[1] + " ");
+                            snpps.Append(pair[0] + " ");
                             sb.Append(pair[0]);
                             foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
                             {
@@ -128,17 +129,18 @@ namespace Control_Node
                                     sb.Append(";" + kvp.Key + ":");
                             }
                             sb.Append(pair[1] + ",");
+                            snpps.Append(pair[1] + " ");
                         }
                     sb.Append(pathEnd);
                     sb.Append("*" + connectionID);
                     snpps.Append(pathEnd);
                     output = sb.ToString();
-                    WriteLine("Ścieżka z " + pathStart + " do " + pathEnd + ": [" + snpps.ToString() + "]");
+                    WriteLine("Ścieżka: [" + snpps.ToString() + "]");
                     Send(output, ccport);
                 }
                 catch (Exception e)
                 {
-                    WriteLine("Brak ścieżki z " + pathStart + " do " + pathEnd);
+                    WriteLine("Brak ścieżki.");
                     output = "RouteQuery_NOPATH*" + connectionID;
                     Send(output, ccport);
                 }
@@ -170,7 +172,7 @@ namespace Control_Node
                         for (int i = 0; i < tempRoute.Count - 1; i++)
                         {
                             string[] pair = localTopology.getSNPPsPair(tempRoute[i], tempRoute[i + 1]);
-                            snpps.Append(pair[0] + " " + pair[1] + " ");
+                            snpps.Append(pair[0] + " ");
                             sb.Append(pair[0]);
                             foreach (KeyValuePair<string, List<string>> kvp in getSNPPs())
                             {
@@ -178,20 +180,23 @@ namespace Control_Node
                                     sb.Append(";" + kvp.Key + ":");
                             }
                             sb.Append(pair[1] + ",");
+                            snpps.Append(pair[1] + " ");
                         }
                     sb.Append(ASend);
+                    tempRemoteSNPPs[0] = ASend;
                     sb.Append(remotesb.ToString());
                     sb.Append("*" + connectionID);
+                    snpps.Append(tempRemoteSNPPs[0] + " " + tempRemoteSNPPs[1] + " ");
                     snpps.Append(pathEnd);
                     output = sb.ToString();
-                    WriteLine("Ścieżka z " + pathStart + " do " + pathEnd + ": [" + snpps.ToString() + "]");
+                    WriteLine("Ścieżka: [" + snpps.ToString() + "]");
                     Send(output, ccport);
                 }
                 catch (Exception e)
                 {
                     output = "RouteQuery_NOPATH*" + connectionID;
+                    WriteLine("Brak ścieżki.");
                     Send(output, ccport);
-                    WriteLine("Brak ścieżki z " + pathStart + " do " + pathEnd);
                 }
             }
         }
