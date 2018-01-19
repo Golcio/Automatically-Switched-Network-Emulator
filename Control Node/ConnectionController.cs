@@ -140,15 +140,15 @@ namespace Control_Node
                     confirmations++;
             }
             if (confirmations == connections[connectionNumb].Count)
-                ConectionConfirmation(connectionNumber);
+                ConnectionConfirmation(connectionNumber);
         }
 
-        void ConectionConfirmation(string connectionNumber)
+        void ConnectionConfirmation(string connectionNumber)
         {
             var client = new UdpClient();
             IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
             client.Connect(point);
-            string message = "ConectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
+            string message = "ConnectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
             //var receivedData = client.Receive(ref point);
             WriteLine("Wysłano ConnectionConfirmation połączenia o numerze " + connectionNumber);
