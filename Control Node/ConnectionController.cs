@@ -112,7 +112,7 @@ namespace Control_Node
                             //restMessage: punkt1,punkt2,przepustowosc
                             RouteQuery(restMessage, connectionORportNumber);
                             break;
-                        case "RouteQuery":
+                        case "RouteTableQuery":
                             WriteLine("Otrzymano RouteQuery.");
                             //restMessage: numerPodsieci:punkt1,punkt2;numerPodsieci2:punkt1,punkt2
                             ConnectionRequest(restMessage, connectionORportNumber);
@@ -120,7 +120,7 @@ namespace Control_Node
                         case "PeerCoordination":
                             WriteLine("Otrzymano PeerCoordination.");
                             capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
-                            RouteQueryAfterPeer(restMessage, connectionORportNumber);
+                            RouteTableQueryAfterPeer(restMessage, connectionORportNumber);
                             confirmations.Add(connectionORportNumber, "partner");
                             break;
                         case "ConnectionConfirmation":
@@ -186,7 +186,7 @@ namespace Control_Node
         }
 
         //RC zestaw mi połączenie pomiędzy tymi dwoma punktami: w wiadomości przekazywane są dwa punkty.
-        void RouteQuery(string routeQuery, string connectionNumber)
+        void RouteTableQuery(string routeQuery, string connectionNumber)
         {
             try
             {
@@ -197,7 +197,7 @@ namespace Control_Node
                     var client = new UdpClient();
                     IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), RCPort);
                     client.Connect(point);
-                    string message = "RouteQuery_" + routeQuery + "*" + connectionNumber;
+                    string message = "RouteTableQuery_" + routeQuery + "*" + connectionNumber;
                     client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
                 }
             }
@@ -207,7 +207,7 @@ namespace Control_Node
             }
 
         }
-        void RouteQueryAfterPeer(string routeQuery, string connectionNumber)
+        void RouteTableQueryAfterPeer(string routeQuery, string connectionNumber)
         {
             try
             {
@@ -224,7 +224,7 @@ namespace Control_Node
                     var client = new UdpClient();
                     IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), RCPort);
                     client.Connect(point);
-                    string message = "RouteQuery_" + routeQuery + "," + capacityString + "*" + connectionNumber;
+                    string message = "RouteTableQuery_" + routeQuery + "," + capacityString + "*" + connectionNumber;
                     client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
                 }
             }
