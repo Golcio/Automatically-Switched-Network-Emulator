@@ -155,7 +155,6 @@ namespace NetworkCallControllerApplication
                     }
                     else if (splitArray[0].Equals("NetworkCallCoordinationOUT"))
                     {
-                        Console.WriteLine(source_address + " " + destination_address);
                         CallAccept(splitArray[1], splitArray[2], splitArray[3], PortTranslation(splitArray[2]));
                     }
                     else if (splitArray[0].Equals("NetworkCallCoordinationIN"))
