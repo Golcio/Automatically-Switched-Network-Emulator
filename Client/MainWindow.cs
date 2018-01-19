@@ -45,11 +45,13 @@ namespace ClientTSST8
         public bool connected = false;
         public string connectedID = null;
         public string myName = null;
+        public string nccport = null;
 
         public MainWindow(Sender sender, Reader reader, string cpccinput, string nccport, string myid)
         {
             this.sender = sender;
             this.reader = reader;
+            this.nccport = nccport;
             string clientName = reader.getClientName();
             myName = clientName;
             InitializeComponent();
@@ -346,10 +348,10 @@ namespace ClientTSST8
             sendingLabel = label;
             string clientName = reader.getClientName();
             //Ls status =  Agent.xd(destination);
-            Agent.setDestinationPort(destination);
+            //Agent.setDestinationPort(destination);
             if (clientName != "" && sendingLabel != "" && numberOfPackets != "" && sendingInterval != "")
             {
-                senderThread = new Thread(() => this.sender.send(Agent.destinationPort, numberOfPackets, sendingInterval, reader.getChosenDefinition()[1], clientName, sendingLabel));
+                senderThread = new Thread(() => this.sender.send(nccport, numberOfPackets, sendingInterval, reader.getChosenDefinition()[1], clientName, sendingLabel));
                 senderThread.Start();
             }
             /*

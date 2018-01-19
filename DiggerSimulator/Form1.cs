@@ -184,7 +184,7 @@ namespace DiggerSimulator
             }
             string connection = comboBox1.SelectedItem.ToString();
             string[] split = connection.Split('-');
-            string output = "BreakConnection_" + split[0] + "-" + split[1];
+            string output = "BreakConnection_" + split[0] + "_" + split[1];
             string[] split2 = split[0].Split('.');
             string node = split2[0];
             string destination = sendingPorts[node].ToString();
@@ -201,7 +201,7 @@ namespace DiggerSimulator
             }
             string connection = comboBox2.SelectedItem.ToString();
             string[] split = connection.Split('-');
-            string output = "RestoreConnection_" + split[0] + "-" + split[1];
+            string output = "RestoreConnection_" + split[0] + "_" + split[1];
             string[] split2 = split[0].Split('.');
             string node = split2[0];
             string destination = sendingPorts[node].ToString();

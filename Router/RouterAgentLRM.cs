@@ -103,12 +103,12 @@ namespace Router
                         Send("LinkConnectionConfirmation", splitArray[2]);
                         label1 = splitArray[1];
                     }
-                    else if (splitArray[0].Equals("ConnectionBroken"))
+                    else if (splitArray[0].Equals("BreakConnection"))
                     {
                         Router.RouterMain.WriteLine("LRM: Zerwano połączenie pomiędzy interfejsem " + splitArray[1].Split('/')[1] + " routera " + splitArray[1].Split('.')[0] + " i interfejsem " + splitArray[2].Split('/')[1] + " routera " + splitArray[2].Split('.')[0] + ".");
                         Send(received_data, rcport);
                     }
-                    else if (splitArray[0].Equals("ConnectionRestored"))
+                    else if (splitArray[0].Equals("RestoreConnection"))
                     {
                         Router.RouterMain.WriteLine("LRM: Naprawiono połączenie pomiędzy interfejsem " + splitArray[1].Split('/')[1] + " routera " + splitArray[1].Split('.')[0] + " i interfejsem " + splitArray[2].Split('/')[1] + " routera " + splitArray[2].Split('.')[0] + ".");
                         Send(received_data, rcport);

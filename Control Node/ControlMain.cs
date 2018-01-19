@@ -118,13 +118,13 @@ namespace Control_Node
                         string[] splitArray3 = splitArray2[0].Split(',');
                         routingController.RouteQuery(splitArray3[0], splitArray3[1], splitArray3[2], splitArray2[1]);
                     }
-                    else if (splitArray[0].Equals("ConnectionBroken"))
+                    else if (splitArray[0].Equals("BreakConnection"))
                     {
                         routingController.ConnectionBroken(splitArray[1], splitArray[2]);
                     }
                     else if (splitArray[0].Equals("ConnectionRestored"))
                     {
-                        routingController.ConnectionBroken(splitArray[1], splitArray[2]);
+                        routingController.ConnectionRestored(splitArray[1], splitArray[2]);
                     }
                 }
             }

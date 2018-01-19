@@ -127,7 +127,7 @@ namespace NetworkCallControllerApplication
                             capacities.Add(connection_number, splitArray[3]);
                         }
 
-                        if (AS1_ports.ContainsValue(source_address) & AS1_ports.ContainsValue(destination_address))
+                        if (AS2_ports.ContainsValue(source_address) & AS2_ports.ContainsValue(destination_address))
                         {
                             CallAccept(source_address, destination_address, splitArray[3], destination_port);
                         }
@@ -169,7 +169,7 @@ namespace NetworkCallControllerApplication
                             CallConfirmed(destination_address, "NO", destination_port);
                         }
                         */
-                        string[] splitArray2 = splitArray[0].Split('*');
+                        string[] splitArray2 = splitArray[1].Split('*');
                         string connectionNumber = splitArray2[1];
                         CallConfirmed(clientIDToClientName(connectionsIDs[connectionNumber][1]), 
                             "YES", PortTranslation(connectionsIDs[connectionNumber][0]));
