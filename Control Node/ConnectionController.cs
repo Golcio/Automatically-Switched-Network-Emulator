@@ -26,6 +26,7 @@ namespace Control_Node
         int udpListenPort, subnetworkNumber, RCPort, partnerPort, parentPort;
         //int - numer połączenia, string - numer podsieci, bool - czy doszło potwierdzenie
         Dictionary<int, Dictionary<string, bool>> connections = new Dictionary<int, Dictionary<string, bool>>();
+        Dictionary<string, string> connectionsSNPPs = new Dictionary<string, string>(); 
         Dictionary<string, string> capacity = new Dictionary<string, string>();
         Dictionary<string, string> confirmations = new Dictionary<string, string>();
 
@@ -107,6 +108,8 @@ namespace Control_Node
                             break;
                         case "ConnectionRequest":
                             WriteLine("Otrzymano ConnectionRequest.");
+                            if (!connectionsSNPPs.ContainsKey(connectionORportNumber))
+                                connectionsSNPPs.Add(connectionORportNumber, restMessage);
                             capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
                             confirmations.Add(connectionORportNumber, "parent");
                             //restMessage: punkt1,punkt2,przepustowosc
@@ -128,7 +131,9 @@ namespace Control_Node
                             ConfirmationsController(restMessage, connectionORportNumber);
                             break;
                         case "BreakConnection":
+                            //idzie z dołu
                             WriteRedLine("Wyjebało nam połączenie nr " + connectionORportNumber);
+                            BreakConnectionReact(restMessage, connectionORportNumber);
                             break;
                         case "Disconnection":
                             //idzie z gory
@@ -137,7 +142,7 @@ namespace Control_Node
                             break;
                         case "DisconnectionConfirmation":
                             WriteLine("Otrzymano potwierdzenie zwolnienia połączenia numer " + connectionORportNumber);
-
+                            DisconnectionsController(restMessage, connectionORportNumber);
                             break;
                     }
                 }
@@ -145,6 +150,26 @@ namespace Control_Node
             }
         }
 
+        void BreakConnectionReact(string restMessage, string connectionNumber)
+        {
+            string subnetworkNumber = restMessage;
+            if (subnetworkNumber.Equals("10") || subnetworkNumber.Equals("11"))
+            {
+                WriteLine("Rozpoczęto procedurę zwalniania połączenia numer " + connectionNumber);
+                Disconnection(connectionNumber);
+            }
+            else
+            {
+                var client = new UdpClient();
+                IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
+                client.Connect(point);
+                string message = "BreakConnection_" + subnetworkNumber + "*" + connectionNumber;
+                client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                //var receivedData = client.Receive(ref point);
+                WriteLine("Wysłano alert o zerwanym połączeniu numer " + connectionNumber + " w podsieci numer " + subnetworkNumber);
+            }
+            
+        }
         void Disconnection(string connectionNumber)
         {
             int connectionNumb, port;
@@ -213,8 +238,16 @@ namespace Control_Node
                 if (kvp.Value == false)
                     confirmations--;
             }
-            if (confirmations == 0)
-                DisconnectionConfirmation(connectionNumber);
+            if (confirmations == 0 )
+            {
+                if (subnetworkNumber.Equals("10") || subnetworkNumber.Equals("11"))
+                {
+                    ConnectionRequest(connectionsSNPPs[connectionNumber], connectionNumber);
+                }
+                else
+                    DisconnectionConfirmation(connectionNumber);
+            }
+                
         }
 
         void DisconnectionConfirmation(string connectionNumber)

@@ -80,12 +80,27 @@ namespace Router
                             WriteLine("Otrzymano potwierdzenie rozłączenia połączenia numer " + connectionORportNumber);
                             DisconnectionConfirmation(connectionORportNumber);
                             break;
+                        case "LinkConnectionDeallocationDenied":
+                            break;
+                        case "BreakConnection":
+                            WriteRedLine("Zerwano połączenie numer " + connectionORportNumber);
+                            BreakConnectionReact(connectionORportNumber);
+                            break;
                     }
                 }
                 Thread.Sleep(50);
             }
         }
         
+        void BreakConnectionReact(string connectionNumber)
+        {
+            var client = new UdpClient();
+            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
+            client.Connect(point);
+            string message = "DisconnectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
+            client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+            WriteLine("Wysłano alarm o zerwanym połączeniu numer " + connectionNumber + " w podsieci numer " + subnetworkNumber);
+        }
         void Disconnection(string connectionNumber)
         {
             var client = new UdpClient();
