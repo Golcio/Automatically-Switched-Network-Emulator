@@ -22,6 +22,7 @@ namespace NetworkCallControllerApplication
         string connection_number;
         //Slownik numerow polaczen
         Dictionary<string, string[]> connectionsIDs = new Dictionary<string, string[]>();
+        Dictionary<string, string> capacities = new Dictionary<string, string>();
         //Slownik portow w AS1
         Dictionary<string, string> AS1_ports = new Dictionary<string, string>();
         //Slownik portow w AS2
@@ -35,7 +36,7 @@ namespace NetworkCallControllerApplication
             this.ccport = ccport;
             // Zrobione po to zeby mozna bylo okreslic czy polaczenie ma uzywac NetworkCallController
             AS1_ports.Add("C1", "14041");
-            AS1_ports.Add("C2", "14042");
+            AS2_ports.Add("C2", "14042");
             AS2_ports.Add("C3", "14043");
             Thread listenThread = new Thread(() => initializeListenerInputSocket());
             listenThread.Start();
@@ -45,11 +46,11 @@ namespace NetworkCallControllerApplication
         void initializeListenerInputSocket()
         {
 
-            string source_address;
-            string destination_address;
-            string destination_port;
+            string source_address = null;
+            string destination_address = null;
+            string destination_port = null;
             string received_data;
-            string nccport;
+            string nccport = null;
             bool done = false;
             UdpClient listener = new UdpClient(Int32.Parse(inputport));
             IPEndPoint groupEP = new IPEndPoint(IPAddress.Any, Int32.Parse(inputport));
@@ -61,28 +62,33 @@ namespace NetworkCallControllerApplication
                 {
                     receive_byte_array = listener.Receive(ref groupEP);
                     received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
+                    WriteLine("Otrzymano: " + received_data);
                     string[] splitArray = received_data.Split('_');
 
                     //Tlumaczenie ClientA na C1 itd. i wpisywanie do tablicy, zeby wrzucic je do slownika z numerami polaczen
-                    string[] addressesArray = DirectoryRequest(splitArray[0], splitArray[1]);
-                    source_address = addressesArray[0];
-                    destination_address = addressesArray[1];
+                    string[] addressesArray = null;
+                    if (!splitArray[0].Equals("ConnectionConfirmation"))
+                    {
+                        addressesArray = DirectoryRequest(splitArray[1], splitArray[2]);
+                        source_address = addressesArray[0];
+                        destination_address = addressesArray[1];
 
-                    //Tlumaczenie adresow docelowych na porty
-                    destination_port = PortTranslation(destination_address);
+                        //Tlumaczenie adresow docelowych na porty
+                        destination_port = PortTranslation(destination_address);
 
-                    //Sprawdzanie na jaki port ncc ma wyslac
-                    nccport = NCCcheck(inputport);
+                        //Sprawdzanie na jaki port ncc ma wyslac
+                        nccport = NCCcheck(inputport);
 
-                    //Ustalanie numerow polaczen
-                    connection_number = SetConnectionNumber(source_address, destination_address);
+                        //Ustalanie numerow polaczen
+                        connection_number = SetConnectionNumber(source_address, destination_address);
+                    }
 
                     if (splitArray[0].Equals("CallAcceptResponse"))
                     {
                         if (splitArray[3].Equals("YES"))
                         {
                             //If sprawdza czy adres docelowy jest w naszej podsieci i od razu do CC czy w innej i wysyłamy do NCC)
-                            if (AS1_ports.ContainsValue(source_address) & AS1_ports.ContainsValue(destination_address))
+                            if (AS2_ports.ContainsValue(source_address) & AS2_ports.ContainsValue(destination_address))
                             {
                                 ConnectionRequest(source_address, destination_address, splitArray[3], ccport, connection_number);
                             }
@@ -94,6 +100,7 @@ namespace NetworkCallControllerApplication
                         else
                         {
                             connectionsIDs.Remove(connection_number);
+                            capacities.Remove(connection_number);
                             WriteLine("Połączenie z " + destination_address + " nie powiodło się.");
                         }
                     }
@@ -109,6 +116,15 @@ namespace NetworkCallControllerApplication
                         else
                         {
                             connectionsIDs.Add(connection_number, addressesArray);
+                        }
+
+                        if (capacities.ContainsKey(connection_number))
+                        {
+                            capacities[connection_number] = splitArray[3];
+                        }
+                        else
+                        {
+                            capacities.Add(connection_number, splitArray[3]);
                         }
 
                         if (AS1_ports.ContainsValue(source_address) & AS1_ports.ContainsValue(destination_address))
@@ -127,20 +143,23 @@ namespace NetworkCallControllerApplication
                             if (kvp.Value[0].Equals(source_address) && kvp.Value[1].Equals(destination_address))
                             {
                                 connectionsIDs.Remove(connection_number);
+                                capacities.Remove(connection_number);
                             }
                         }
-                        ConnectionTeardown(source_address, destination_port, ccport, connection_number);
                     }
                     else if (splitArray[0].Equals("NetworkCallCoordinationOUT"))
                     {
-                        CallAccept(source_address, destination_address, splitArray[3], destination_port);
+                        Console.WriteLine(source_address + " " + destination_address);
+                        CallAccept(splitArray[1], splitArray[2], splitArray[3], PortTranslation(splitArray[2]));
                     }
                     else if (splitArray[0].Equals("NetworkCallCoordinationIN"))
                     {
-                        ConnectionRequest(source_address, destination_address, splitArray[3], destination_port, connection_number);
+                        string connectionNumber = SetConnectionNumber(splitArray[1], splitArray[2]);
+                        ConnectionRequest(splitArray[1], splitArray[2], capacities[connectionNumber], ccport, connectionNumber);
                     }
-                    else if (splitArray[0].Equals("ConnectionConfirmed"))
+                    else if (splitArray[0].Equals("ConnectionConfirmation"))
                     {
+                        /*
                         if (splitArray[3].Equals("YES"))
                         {
                             CallConfirmed(destination_address, "YES", destination_port);
@@ -149,6 +168,11 @@ namespace NetworkCallControllerApplication
                         {
                             CallConfirmed(destination_address, "NO", destination_port);
                         }
+                        */
+                        string[] splitArray2 = splitArray[0].Split('*');
+                        string connectionNumber = splitArray2[1];
+                        CallConfirmed(clientIDToClientName(connectionsIDs[connectionNumber][1]), 
+                            "YES", PortTranslation(connectionsIDs[connectionNumber][0]));
                     }
 
                 }
@@ -177,18 +201,19 @@ namespace NetworkCallControllerApplication
             }
             if (exception_thrown == false)
             {
-                WriteLine("RC: Wysłano:\t" + message);
+                WriteLine("Wysłano: " + message + " do " + destination);
             }
             else
             {
                 exception_thrown = false;
-                WriteLine("RC:\tNie udało się wysłać żądania");
+                WriteLine("Nie udało się wysłać żądania");
             }
         }
-        public void CallAccept(string sourceid, string destinationid, string destination_port, string capacity)
+        public void CallAccept(string sourceid, string destinationid, string capacity, string destination_port)
         {
             StringBuilder messagesb = new StringBuilder();
-            messagesb.Append("CallAccept_" + sourceid + "_" + destinationid + "_" + capacity);
+
+            messagesb.Append("CallAccept_" + clientIDToClientName(sourceid) + "_" + clientIDToClientName(destinationid) + "_" + capacity);
             string message = messagesb.ToString();
             Send(message, destination_port);
         }
@@ -203,7 +228,7 @@ namespace NetworkCallControllerApplication
         public void NetworkCallCoordinationOUT(string sourceid, string destinationid, string capacity, string destination_port)
         {
             StringBuilder messagesb = new StringBuilder();
-            messagesb.Append("ConnectionCallCoordinationOUT_" + sourceid + "_" + destinationid + "_" + capacity);
+            messagesb.Append("NetworkCallCoordinationOUT_" + sourceid + "_" + destinationid + "_" + capacity);
             string message = messagesb.ToString();
             Send(message, destination_port);
         }
@@ -211,7 +236,7 @@ namespace NetworkCallControllerApplication
         public void NetworkCallCoordinationIN(string sourceid, string destinationid, string capacity, string destination_port)
         {
             StringBuilder messagesb = new StringBuilder();
-            messagesb.Append("ConnectionCallCoordinationIN_" + sourceid + "_" + destinationid + "_" + capacity);
+            messagesb.Append("NetworkCallCoordinationIN_" + sourceid + "_" + destinationid + "_" + capacity);
             string message = messagesb.ToString();
             Send(message, destination_port);
         }
@@ -247,11 +272,11 @@ namespace NetworkCallControllerApplication
         }
         public string[] DirectoryRequest(string sourceid, string destinationid)
         {
-            string[] addressesArray = null;
+            string[] addressesArray = new string[2];
             string sourceaddress;
             string destinationaddress;
 
-            if (sourceid.Equals("ClientA"))
+            if (sourceid.Equals("clientA"))
             {
                 sourceaddress = addressclientA;
             }
@@ -268,7 +293,7 @@ namespace NetworkCallControllerApplication
             {
                 destinationaddress = addressclientA;
             }
-            else if (destinationid.Equals("ClientB"))
+            else if (destinationid.Equals("clientB"))
             {
                 destinationaddress = addressclientB;
             }
@@ -313,6 +338,17 @@ namespace NetworkCallControllerApplication
                 nccport = "14051";
             }
             return nccport;
+        }
+
+        public string clientIDToClientName(string clientID)
+        {
+            if (clientID.Equals("C1"))
+                return "clientA";
+            else if (clientID.Equals("C2"))
+                return "clientB";
+            else
+                return "clientC";
+
         }
         public string SetConnectionNumber(string sourceid, string destinationid)
         {

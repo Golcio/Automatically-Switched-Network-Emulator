@@ -72,11 +72,6 @@ namespace Control_Node
             Int32.TryParse(ccport, out ccportINT);
             Int32.TryParse(rcport, out rcportINT);
             ConnectionController connectionController = new ConnectionController(ccportINT, subnetworknumber, rcportINT, partnerPort, parentPort);
-            if (subnetworknumber == 10)
-            {
-                Thread.Sleep(10000);
-                routingController.Send("ConnectionRequest_C1,C2,5*1", routingController.ccport);
-            }
         }
 
         public static void ConnectionController()
