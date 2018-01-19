@@ -191,14 +191,20 @@ namespace Router
         private static void LinkConnectionDeallocation(List<String[]> switchTables, string connectionid)
         {
             int counter = 0;
+            string[] removeline = null;
             foreach (string[] line in switchTables)
             {
                 if (line[4].Equals(connectionid))
                 {
-                    switchTables.Remove(line);
+                    removeline = line;
                     Send("LinkConnectionDeallocationConfirm_ *" + connectionid, ccport);
                     counter++;
                 }
+            }
+
+            if(removeline != null)
+            {
+                switchTables.Remove(removeline);
             }
             
             if(counter == 0)

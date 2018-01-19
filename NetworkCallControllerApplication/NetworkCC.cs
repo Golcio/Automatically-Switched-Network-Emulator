@@ -185,6 +185,11 @@ namespace NetworkCallControllerApplication
                         CallConfirmed(clientIDToClientName(connectionsIDs[connectionNumber][1]), 
                             "YES", PortTranslation(connectionsIDs[connectionNumber][0]));
                     }
+                    else if (splitArray[0].Equals("Disconnection"))
+                    {
+                        //string[] splitArray2 = splitArray[1].Split('*');
+                        //string connectionNumber = splitArray2[1];
+                    }
 
                 }
             }
