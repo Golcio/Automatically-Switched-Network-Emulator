@@ -122,7 +122,7 @@ namespace Control_Node
                     {
                         routingController.ConnectionBroken(splitArray[1], splitArray[2]);
                     }
-                    else if (splitArray[0].Equals("ConnectionRestored"))
+                    else if (splitArray[0].Equals("RestoreConnection"))
                     {
                         routingController.ConnectionRestored(splitArray[1], splitArray[2]);
                     }

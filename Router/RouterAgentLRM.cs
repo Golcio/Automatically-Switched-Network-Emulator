@@ -192,7 +192,7 @@ namespace Router
         {
             foreach(string[] line in switchTables)
             {
-                if(line[4].Equals(connectionid)
+                if(line[4].Equals(connectionid))
                 {
                     switchTables.Remove(line);
                 }
