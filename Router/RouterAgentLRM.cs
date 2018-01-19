@@ -22,8 +22,9 @@ namespace Router
         static string lrmtolrmport;
         static string ccport;
         static string rcport;
+        static int routernumber;
 
-        public RouterAgentLRM(string lrmport, string lrmtolrmport, string ccport, Dictionary<string, string> nextlrms, List<string> labelpool, string rcport, List<string[]> switchTables)
+        public RouterAgentLRM(string lrmport, string lrmtolrmport, string ccport, Dictionary<string, string> nextlrms, List<string> labelpool, string rcport, List<string[]> switchTables, int routernumber)
         {
             RouterAgentLRM.lrmtolrmport = lrmtolrmport;
             RouterAgentLRM.ccport = ccport;
@@ -35,6 +36,7 @@ namespace Router
             sender = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
             RouterAgentLRM.nextlrms = new Dictionary<string, string>(nextlrms);
             RouterAgentLRM.labelpool = new List<string>(labelpool);
+            RouterAgentLRM.routernumber = routernumber;
             Router.RouterMain.WriteLine("Link Resource Manager Utworzony.");
             Thread lrm = new Thread(() => LRMStart(switchTables));
             lrm.Start();
@@ -83,7 +85,7 @@ namespace Router
                                 label2 = null;
                                 port1 = null;
                                 port2 = null;
-                                Send("LinkConnectionRequestConfirm_" + SNPPs + "*" + connectionid, ccport);
+                                Send("LinkConnectionRequestConfirm_" + routernumber + "*" + connectionid, ccport);
                                 Router.RouterMain.WriteLine("LRM: Zestawiono połączenie nr " + connectionid);
                             }
                         });
@@ -120,7 +122,7 @@ namespace Router
                         label2 = null;
                         port1 = null;
                         port2 = null;
-                        Send("LinkConnectionRequestConfirm_" + SNPPs + "*" + connectionid, ccport);
+                        Send("LinkConnectionRequestConfirm_" + routernumber + "*" + connectionid, ccport);
                         Router.RouterMain.WriteLine("LRM: Zestawiono połączenie nr " + connectionid);
                     }
                 }

@@ -129,20 +129,26 @@ namespace Control_Node
 
         void ConfirmationsController(string restMessage, string connectionNumber)
         {
-            string subnetworkNumber = restMessage.Split(':')[0];
+            string subnetworkNumber = restMessage;
             Int32.TryParse(connectionNumber, out int connectionNumb);
             connections[connectionNumb][subnetworkNumber] = true;
             WriteLine("Otrzymano potwierdzenie zestawienia połączenia numer " + connectionNumber + " od CC w podsieci numer " + subnetworkNumber);
-            
-            ConectionConfirmation(connectionNumber);
+            int confirmations = 0;
+            foreach (KeyValuePair<string, bool> kvp in connections[connectionNumb])
+            {
+                if (kvp.Value == true)
+                    confirmations++;
+            }
+            if (confirmations == connections[connectionNumb].Count)
+                ConnectionConfirmation(connectionNumber);
         }
 
-        void ConectionConfirmation(string connectionNumber)
+        void ConnectionConfirmation(string connectionNumber)
         {
             var client = new UdpClient();
             IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
             client.Connect(point);
-            string message = "ConectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
+            string message = "ConnectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
             //var receivedData = client.Receive(ref point);
             WriteLine("Wysłano ConnectionConfirmation połączenia o numerze " + connectionNumber);
