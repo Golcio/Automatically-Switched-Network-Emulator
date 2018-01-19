@@ -88,10 +88,14 @@ namespace NetworkCallControllerApplication
                         if (splitArray[3].Equals("YES"))
                         {
                             //If sprawdza czy adres docelowy jest w naszej podsieci i od razu do CC czy w innej i wysyłamy do NCC)
-                            if (AS2_ports.ContainsValue(source_address) & AS2_ports.ContainsValue(destination_address))
+                            if (AS2_ports.ContainsKey(source_address) & AS2_ports.ContainsKey(destination_address))
                             {
-                                ConnectionRequest(source_address, destination_address, splitArray[3], ccport, connection_number);
+                                string[] array = DirectoryRequest(splitArray[1], splitArray[2]);
+                                string connectionNumber = SetConnectionNumber(array[0], array[1]);
+                                ConnectionRequest(array[0], array[1], capacities[connectionNumber], ccport, connectionNumber);
+                                //ConnectionRequest(source_address, destination_address, splitArray[3], ccport, connection_number);
                             }
+
                             else
                             {
                                 NetworkCallCoordinationIN(source_address, destination_address, splitArray[3], nccport);
@@ -127,7 +131,7 @@ namespace NetworkCallControllerApplication
                             capacities.Add(connection_number, splitArray[3]);
                         }
 
-                        if (AS2_ports.ContainsValue(source_address) & AS2_ports.ContainsValue(destination_address))
+                        if (AS2_ports.ContainsKey(source_address) & AS2_ports.ContainsKey(destination_address))
                         {
                             CallAccept(source_address, destination_address, splitArray[3], destination_port);
                         }
@@ -350,6 +354,7 @@ namespace NetworkCallControllerApplication
                 return "clientC";
 
         }
+
         public string SetConnectionNumber(string sourceid, string destinationid)
         {
             string connection_number = null;
