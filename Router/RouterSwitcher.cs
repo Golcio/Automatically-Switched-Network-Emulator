@@ -38,7 +38,7 @@ namespace Router
                     signal++;
                     recursionSwitch(ref receivedData, switchTables, currentport2, packet, ref signal);
                 }
-                else if (Int32.Parse(switchTables[i][0]) == currentport2 && Int32.Parse(switchTables[i][1]) == packet.Labels.Peek() && switchTables[i].Length == 4)
+                else if (Int32.Parse(switchTables[i][0]) == currentport2 && Int32.Parse(switchTables[i][1]) == packet.Labels.Peek() && switchTables[i].Length == 5)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(Router.RouterMain.GetTimestamp(DateTime.Now) + "\tUsunięto etykietę nr " + packet.Labels.Pop());
@@ -51,7 +51,7 @@ namespace Router
                     signal++;
                     recursionSwitch(ref receivedData, switchTables, currentport2, packet, ref signal);
                 }
-                else if (Int32.Parse(switchTables[i][0]) == currentport2 && Int32.Parse(switchTables[i][1]) == packet.Labels.Peek() && switchTables[i].Length == 5)
+                else if (Int32.Parse(switchTables[i][0]) == currentport2 && Int32.Parse(switchTables[i][1]) == packet.Labels.Peek() && switchTables[i].Length == 6)
                 {
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(Router.RouterMain.GetTimestamp(DateTime.Now) + "\tDodano etykietę nr " + Int32.Parse(switchTables[i][3]));

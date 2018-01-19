@@ -127,8 +127,8 @@ namespace Control_Node
                             WriteLine("Otrzymano ConnectionConfirmation.");
                             ConfirmationsController(restMessage, connectionORportNumber);
                             break;
-                        case "WyjebanePolaczenie":
-
+                        case "BreakConnection ":
+                            WriteRedLine("Wyjebało nam połączenie nr " + connectionORportNumber);
                             break;
                         case "koniec połączenia":
                             break;
