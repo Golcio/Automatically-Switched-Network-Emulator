@@ -72,13 +72,39 @@ namespace Router
                             WriteLine("Otrzymano od LRM ConnectionConfirmation połączenia o numerze: " + connectionORportNumber + ".");
                             ConnectionConfirmation(restMessage, connectionORportNumber);
                             break;
+                        case "Disconnection":
+                            WriteLine("Rozpoczęto procedurę zwalniania połączenia numer " + connectionORportNumber);
+                            Disconnection(connectionORportNumber);
+                            break;
+                        case "LinkConnectionDeallocationConfirm":
+                            WriteLine("Otrzymano potwierdzenie rozłączenia połączenia numer " + connectionORportNumber);
+                            DisconnectionConfirmation(connectionORportNumber);
+                            break;
                     }
                 }
                 Thread.Sleep(50);
             }
         }
         
+        void Disconnection(string connectionNumber)
+        {
+            var client = new UdpClient();
+            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), lrmPort);
+            client.Connect(point);
+            string message = "LinkConnectionDeallocation_" + connectionNumber;
+            client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+            WriteLine("Wysłano żądanie zwolnienia połączenia numer " + connectionNumber);
+        }
 
+        void DisconnectionConfirmation(string connectionNumber)
+        {
+            var client = new UdpClient();
+            IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
+            client.Connect(point);
+            string message = "DisconnectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
+            client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+            WriteLine("Wysłano potwierdzenie rozłączenia połączenia numer " + connectionNumber);
+        }
         void ConnectionConfirmation(string restMessage, string connectionNumber)
         {
             var client = new UdpClient();
@@ -86,6 +112,7 @@ namespace Router
             client.Connect(point);
             string message = "ConnectionConfirmation_" + restMessage + "*" + connectionNumber;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+            WriteLine("Wysłano potwierdzenie zestawienia połączenia numer " + connectionNumber + " o treści " + restMessage);
         }
         //Jeżeli CC jest CC routerowym to wtedy ConnectionRequest przesyłane jest do LRMa, 
         //który ma za zadanie zestawić połączenie.
@@ -96,6 +123,7 @@ namespace Router
             client.Connect(point);
             string message = "LinkConnectionRequest_" + linkRequest + "*" + connectionNumberGiven;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+            WriteLine("Wysłano żądanie zestawienia połączenia numer " + connectionNumberGiven + " o treści: " + linkRequest);
         }
 
         //Wysyłanie wiadomosci "elo ziom, zarządzam podsiecią nr "subnetworkNumber", 
@@ -107,7 +135,7 @@ namespace Router
             client.Connect(point);
             string message = "FamilyTies_" + subnetworkNumber.ToString() + "*" + udpListenPort.ToString();
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
-
+            WriteLine("Wysłano informację o przynależności do podsieci zarządzanej przez CC na porcie " + parentPort.ToString());
         }
 
         public static void WriteLine(String text)
