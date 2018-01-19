@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Network Manager", "Network 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiggerSimulator", "DiggerSimulator\DiggerSimulator.csproj", "{A8FA00C0-A4C9-4588-8B59-5D0676BB1FF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetworkCallControllerApplication", "NetworkCallControllerApplication\NetworkCallControllerApplication.csproj", "{BDCE684A-C2A0-4D05-A999-F882340EC9C1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{A8FA00C0-A4C9-4588-8B59-5D0676BB1FF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A8FA00C0-A4C9-4588-8B59-5D0676BB1FF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A8FA00C0-A4C9-4588-8B59-5D0676BB1FF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDCE684A-C2A0-4D05-A999-F882340EC9C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDCE684A-C2A0-4D05-A999-F882340EC9C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDCE684A-C2A0-4D05-A999-F882340EC9C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDCE684A-C2A0-4D05-A999-F882340EC9C1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

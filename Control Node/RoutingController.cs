@@ -107,7 +107,7 @@ namespace Control_Node
                         SNPb = kvp.Key;
                 }
                 StringBuilder sb = new StringBuilder();
-                sb.Append("RouteQuery_");
+                sb.Append("RouteTableQuery_");
                 sb.Append(SNPa + ":");
                 sb.Append(pathStart + ",");
                 List<string> tempRoute;
@@ -141,7 +141,7 @@ namespace Control_Node
                 catch (Exception e)
                 {
                     WriteLine("Brak ścieżki.");
-                    output = "RouteQuery_NOPATH*" + connectionID;
+                    output = "RouteTableQuery_NOPATH*" + connectionID;
                     Send(output, ccport);
                 }
             }
@@ -158,7 +158,7 @@ namespace Control_Node
                         SNPb = kvp.Key;
                 }
                 StringBuilder sb = new StringBuilder();
-                sb.Append("RouteQuery_");
+                sb.Append("RouteTableQuery_");
                 sb.Append(SNPa + ":");
                 sb.Append(pathStart + ",");
                 List<string> tempRoute;
@@ -194,7 +194,7 @@ namespace Control_Node
                 }
                 catch (Exception e)
                 {
-                    output = "RouteQuery_NOPATH*" + connectionID;
+                    output = "RouteTableQuery_NOPATH*" + connectionID;
                     WriteLine("Brak ścieżki.");
                     Send(output, ccport);
                 }

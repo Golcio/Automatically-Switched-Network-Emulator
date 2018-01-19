@@ -109,7 +109,7 @@ namespace Control_Node
                             domain = "AS 2";
                         Control_Node.RoutingController.WriteLine("Otrzymano topologię " + domain);
                     }
-                    else if (splitArray[0].Equals("RouteQuery"))
+                    else if (splitArray[0].Equals("RouteTableQuery"))
                     {
                         string[] splitArray2 = splitArray[1].Split('*');
                         string[] splitArray3 = splitArray2[0].Split(',');

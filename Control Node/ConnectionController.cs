@@ -110,7 +110,7 @@ namespace Control_Node
                             capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
                             confirmations.Add(connectionORportNumber, "parent");
                             //restMessage: punkt1,punkt2,przepustowosc
-                            RouteQuery(restMessage, connectionORportNumber);
+                            RouteTableQuery(restMessage, connectionORportNumber);
                             break;
                         case "RouteTableQuery":
                             WriteLine("Otrzymano RouteQuery.");
