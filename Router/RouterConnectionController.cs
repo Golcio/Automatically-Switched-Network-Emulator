@@ -97,7 +97,7 @@ namespace Router
             var client = new UdpClient();
             IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
             client.Connect(point);
-            string message = "DisconnectionConfirmation_" + subnetworkNumber + "*" + connectionNumber;
+            string message = "BreakConnection_" + subnetworkNumber + "*" + connectionNumber;
             client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
             WriteLine("Wysłano alarm o zerwanym połączeniu numer " + connectionNumber + " w podsieci numer " + subnetworkNumber);
         }
