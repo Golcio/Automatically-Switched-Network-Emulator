@@ -101,20 +101,25 @@ namespace Router
                     else if (splitArray[0].Equals("LinkConnection"))
                     {
                         Send("LinkConnectionConfirmation", splitArray[2]);
+                        Router.RouterMain.WriteLine("LRM: Wysłano potwierdzenie otrzymania wiadomości z etykietą " + splitArray[1] + " na port zwrotny " + splitArray[2]);
                         label1 = splitArray[1];
                     }
                     else if (splitArray[0].Equals("BreakConnection"))
                     {
                         Router.RouterMain.WriteLine("LRM: Zerwano połączenie pomiędzy interfejsem " + splitArray[1].Split('/')[1] + " routera " + splitArray[1].Split('.')[0] + " i interfejsem " + splitArray[2].Split('/')[1] + " routera " + splitArray[2].Split('.')[0] + ".");
                         Send(received_data, rcport);
+                        Router.RouterMain.WriteLine("LRM: Wysłano informację o zerwanym łączu do RC na port " + rcport);
                         Send("BreakConnection_" + " " + "*" + connectionid, ccport);
+                        Router.RouterMain.WriteLine("LRM: Wysłano informację o zerwanym łączu do CC na port " + ccport);
                         Send(received_data, "14099");
                     }
                     else if (splitArray[0].Equals("RestoreConnection"))
                     {
                         Router.RouterMain.WriteLine("LRM: Naprawiono połączenie pomiędzy interfejsem " + splitArray[1].Split('/')[1] + " routera " + splitArray[1].Split('.')[0] + " i interfejsem " + splitArray[2].Split('/')[1] + " routera " + splitArray[2].Split('.')[0] + ".");
                         Send(received_data, rcport);
+                        Router.RouterMain.WriteLine("LRM: Wysłano informację o naprawionym łączu do RC na port " + rcport);
                         Send("RestoreConnection_" + " " + "*" + connectionid, ccport);
+                        Router.RouterMain.WriteLine("LRM: Wysłano informację o naprawionym łączu do CC na port " + ccport);
                         Send(received_data, "14099");
                     }
 
@@ -172,6 +177,7 @@ namespace Router
             if (nextlrm != null)
             {
                 Send("LinkConnection_" + label2 + "_" + lrmtolrmport, nextlrm);
+                Router.RouterMain.WriteLine("LRM: Wysłano etykietę " + label2 + " oraz port zwrotny " + lrmtolrmport + " do LRMa działającego na porcie " + nextlrm);
                 string received_data;
                 byte[] receive_byte_array;
                 receive_byte_array = listener2.Receive(ref groupEP2);
@@ -185,7 +191,7 @@ namespace Router
         {
             string[] switchtablerow = { port1, label1, port2, label2, connectionid };
             switchTables.Add(switchtablerow);
-            Router.RouterMain.WriteLine(switchTables[switchTables.Count - 1][0] + "_" + switchTables[switchTables.Count - 1][1] + "_" + switchTables[switchTables.Count - 1][2] + "_" + switchTables[switchTables.Count - 1][3] + "_" + switchTables[switchTables.Count - 1][4]);
+            Router.RouterMain.WriteLine("LRM: Dodano wpis do tablicy komutacji: " + switchTables[switchTables.Count - 1][0] + "_" + switchTables[switchTables.Count - 1][1] + "_" + switchTables[switchTables.Count - 1][2] + "_" + switchTables[switchTables.Count - 1][3] + "_" + switchTables[switchTables.Count - 1][4]);
 
         }
         private static void LinkConnectionDeallocation(List<String[]> switchTables, string connectionid)
@@ -198,6 +204,7 @@ namespace Router
                 {
                     removeline = line;
                     Send("LinkConnectionDeallocationConfirm_ *" + connectionid, ccport);
+                    Router.RouterMain.WriteLine("LRM: Wysłano potwierdzenie dealokacji łącza połączenia nr " + connectionid);
                     counter++;
                 }
             }
@@ -205,11 +212,13 @@ namespace Router
             if(removeline != null)
             {
                 switchTables.Remove(removeline);
+                Router.RouterMain.WriteLine("LRM: Usunięto wpis z tablicy: " + removeline);
             }
             
             if(counter == 0)
             {
                 Send("LinkConnectionDeallocationDenied_ *" + connectionid, ccport);
+                Router.RouterMain.WriteLine("LRM: Operacja dealokacji anulowana: nie ma połączenia o numerze " + connectionid);
             }
         }
 
