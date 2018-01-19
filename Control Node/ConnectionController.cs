@@ -133,6 +133,7 @@ namespace Control_Node
             Int32.TryParse(connectionNumber, out int connectionNumb);
             connections[connectionNumb][subnetworkNumber] = true;
             WriteLine("Otrzymano potwierdzenie zestawienia połączenia numer " + connectionNumber + " od CC w podsieci numer " + subnetworkNumber);
+            
             ConectionConfirmation(connectionNumber);
         }
 
