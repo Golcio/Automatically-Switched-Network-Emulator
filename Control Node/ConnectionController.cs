@@ -395,8 +395,11 @@ namespace Control_Node
             string capacityString = " ";
             //connections.Add(connectionNumber, message + "*" + oneSplitMessage.Length.ToString());
             //confirmations.Add(connectionNumber, 0);
-            connections.Add(connectionNumber, new Dictionary<string, bool>());
-            foreach(KeyValuePair<string,string> kvpCC in capacity)
+            if (!connections.ContainsKey(connectionNumber))
+                connections.Add(connectionNumber, new Dictionary<string, bool>());
+            else
+                connections[connectionNumber] = new Dictionary<string, bool>();
+            foreach (KeyValuePair<string,string> kvpCC in capacity)
             {
                 if (connectionNumberString.Equals(kvpCC.Key))
                     capacityString = kvpCC.Value;
