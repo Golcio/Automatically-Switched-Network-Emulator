@@ -116,6 +116,7 @@ namespace Control_Node
                             break;
                         case "PeerCoordination":
                             WriteLine("Otrzymano PeerCoordination.");
+                            capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
                             RouteQueryAfterPeer(restMessage, connectionORportNumber);
                             break;
                         case "ConnectionConfirmation":
