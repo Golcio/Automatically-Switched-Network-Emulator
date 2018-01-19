@@ -68,10 +68,16 @@ namespace Control_Node
             WriteLine("Dodano CC z podsieci nr " + subnetworkNumber + " do zarządzanych CC.");
         }
 
-        void AddingPartners(string subnetworkNumber, string remotePort)
+        void AddingPartners(string subnetworkNumber, string mySubnetworkNumber, string remotePort)
         {
-            partners.Add(subnetworkNumber, remotePort);
-            WriteLine("Dodano CC z podsieci nr " + subnetworkNumber + " do partnerujących CC.");
+            if (partners.ContainsKey(subnetworkNumber))
+                return;
+            else
+            {
+                partners.Add(subnetworkNumber, remotePort);
+                Partners(mySubnetworkNumber.ToString());
+                WriteLine("Dodano CC z podsieci nr " + subnetworkNumber + " do partnerujących CC.");
+            }
         }
         void analizing()
         {
@@ -95,7 +101,7 @@ namespace Control_Node
                             break;
                         case "Partners":
                             WriteLine("Otrzymano informacje o partnerujacym CC podsieci nr " + restMessage);
-                            AddingPartners(restMessage, connectionORportNumber);
+                            AddingPartners(restMessage, subnetworkNumber.ToString(), connectionORportNumber);
                             break;
                         case "ConnectionRequest":
                             WriteLine("Otrzymano ConnectionRequest.");
@@ -241,6 +247,7 @@ namespace Control_Node
                     }
                 }
 
+                Console.WriteLine(partners.Count);
                 foreach (KeyValuePair<string, string> kvpP in partners)
                 {
                     if (kvpP.Key.Equals(subnetwork))
