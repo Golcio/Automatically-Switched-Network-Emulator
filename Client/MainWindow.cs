@@ -406,11 +406,11 @@ namespace ClientTSST8
             this.richTextBox1.ScrollToCaret();
         }
 
-        public void connectedProcedure(string connectedIDl)
+        public void connectedProcedure(string conID)
         {
             if (connected == false)
             {
-                this.connectedID = connectedID;
+                this.connectedID = conID;
                 this.connected = true;
                 string text = "Połączono z " + connectedID + ".\n";
                 MethodInvoker inv = delegate

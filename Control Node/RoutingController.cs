@@ -80,6 +80,10 @@ namespace Control_Node
                 {
                     pathStart = kvp.Value;
                 }
+                if (kvp.Key.Equals(pathEnd))
+                {
+                    pathEnd = kvp.Value;
+                }
             }
             string remoteAS = null;
             foreach (KeyValuePair<string, RemoteTopology.Topology> kvp in remoteTopology.topologies)
