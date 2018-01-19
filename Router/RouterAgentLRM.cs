@@ -80,7 +80,7 @@ namespace Router
 
                             if (label1 != null && label2 != null)
                             {
-                                LinkConnection(port1, label1, port2, label2, switchTables);
+                                LinkConnection(port1, label1, port2, label2, switchTables, connectionid);
                                 label1 = null;
                                 label2 = null;
                                 port1 = null;
@@ -95,7 +95,7 @@ namespace Router
                     //wiadomośc od CC (jeszcze nie gotowe)
                     else if (splitArray[0].Equals("LinkConnectionDeallocation"))
                     {
-                        LinkConnectionDeallocation(switchTables);
+                        LinkConnectionDeallocation(switchTables, splitArray[1]);
                     }
                     //wiadomośc od wcześniejszego LRMa
                     else if (splitArray[0].Equals("LinkConnection"))
@@ -121,7 +121,7 @@ namespace Router
                     //warunek pozwalający zestawić połączenie czyli dodać linijkę do tablicy komutacji
                     if (label1 != null && label2 != null)
                     {
-                        LinkConnection(port1, label1, port2, label2, switchTables);
+                        LinkConnection(port1, label1, port2, label2, switchTables, connectionid);
                         label1 = null;
                         label2 = null;
                         port1 = null;
@@ -181,17 +181,23 @@ namespace Router
             return returnvalues;
         }
         //R3.S1/1,R4.S1/3
-        private static void LinkConnection(string port1, string label1, string port2, string label2, List<String[]> switchTables)
+        private static void LinkConnection(string port1, string label1, string port2, string label2, List<String[]> switchTables, string connectionid)
         {
-            string[] switchtablerow = { port1, label1, port2, label2 };
+            string[] switchtablerow = { port1, label1, port2, label2, connectionid};
             switchTables.Add(switchtablerow);
-            Router.RouterMain.WriteLine(switchTables[0][0] + "_" + switchTables[0][1] + "_" + switchTables[0][2] + "_" + switchTables[0][3]);
+            Router.RouterMain.WriteLine(switchTables[switchTables.Count - 1][0] + "_" + switchTables[switchTables.Count - 1][1] + "_" + switchTables[switchTables.Count - 1][2] + "_" + switchTables[switchTables.Count - 1][3] + "_" + switchTables[switchTables.Count - 1][4]);
 
         }
-        private static void LinkConnectionDeallocation(List<String[]> switchTables)
+        private static void LinkConnectionDeallocation(List<String[]> switchTables, string connectionid)
         {
-            switchTables.Clear();
-            //jakieś wywołanie funkcji cc która uruchamia machinę wypierdalania wszystkiego
+            foreach(string[] line in switchTables)
+            {
+                if(line[4].Equals(connectionid)
+                {
+                    switchTables.Remove(line);
+                }
+            }
+            Send("LinkConnectionDeallocationConfirm_" + connectionid, ccport);
         }
 
         private static void Send(string message, string port)
