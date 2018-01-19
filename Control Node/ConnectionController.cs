@@ -29,6 +29,7 @@ namespace Control_Node
         Dictionary<string, string> connectionsSNPPs = new Dictionary<string, string>(); 
         Dictionary<string, string> capacity = new Dictionary<string, string>();
         Dictionary<string, string> confirmations = new Dictionary<string, string>();
+        List<string> connectionsToRestore = new List<string>();
         bool czyBreak = false;
         public ConnectionController(int udpListenPort, int subnetworkNumber, int RCPort, int partnerPort, int parentPort)
         {
@@ -110,8 +111,14 @@ namespace Control_Node
                             WriteLine("Otrzymano ConnectionRequest.");
                             if (!connectionsSNPPs.ContainsKey(connectionORportNumber))
                                 connectionsSNPPs.Add(connectionORportNumber, restMessage);
-                            capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
-                            confirmations.Add(connectionORportNumber, "parent");
+                            if (!capacity.ContainsKey(connectionORportNumber))
+                                capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
+                            else
+                                capacity[connectionORportNumber] = restMessage.Split(',')[2];
+                            if (!confirmations.ContainsKey(connectionORportNumber))
+                                confirmations.Add(connectionORportNumber, "parent");
+                            else
+                                confirmations[connectionORportNumber] = "parent";
                             //restMessage: punkt1,punkt2,przepustowosc
                             RouteTableQuery(restMessage, connectionORportNumber);
                             break;
@@ -122,9 +129,15 @@ namespace Control_Node
                             break;
                         case "PeerCoordination":
                             WriteLine("Otrzymano PeerCoordination.");
-                            capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
+                            if (!capacity.ContainsKey(connectionORportNumber))
+                                capacity.Add(connectionORportNumber, restMessage.Split(',')[2]);
+                            else
+                                capacity[connectionORportNumber] = restMessage.Split(',')[2];
                             RouteTableQueryAfterPeer(restMessage, connectionORportNumber);
-                            confirmations.Add(connectionORportNumber, "partner");
+                            if (!confirmations.ContainsKey(connectionORportNumber))
+                                confirmations.Add(connectionORportNumber, "partner");
+                            else
+                                confirmations[connectionORportNumber] = "partner";
                             break;
                         case "ConnectionConfirmation":
                             WriteLine("Otrzymano ConnectionConfirmation.");
@@ -154,9 +167,10 @@ namespace Control_Node
         void BreakConnectionReact(string restMessage, string connectionNumber)
         {
             //string subnetworkNumber = restMessage;
-            if (subnetworkNumber.Equals("10") || subnetworkNumber.Equals("11"))
+            if (subnetworkNumber == 10 || subnetworkNumber == 11)
             {
                 WriteLine("Rozpoczęto procedurę zwalniania połączenia numer " + connectionNumber);
+                connectionsToRestore.Add(connectionNumber);
                 Disconnection(connectionNumber);
             }
             else
@@ -229,10 +243,10 @@ namespace Control_Node
 
         void DisconnectionsController(string restMessage, string connectionNumber)
         {
-            string subnetworkNumber = restMessage;
+            string subnetworkNumberString = restMessage;
             Int32.TryParse(connectionNumber, out int connectionNumb);
-            connections[connectionNumb][subnetworkNumber] = false;
-            WriteLine("Otrzymano potwierdzenie zwolnienia połączenia numer " + connectionNumber + " od CC w podsieci numer " + subnetworkNumber);
+            connections[connectionNumb][subnetworkNumberString] = false;
+            WriteLine("Otrzymano potwierdzenie zwolnienia połączenia numer " + connectionNumber + " od CC w podsieci numer " + subnetworkNumberString);
             int confirmations = connections[connectionNumb].Count;
             foreach (KeyValuePair<string, bool> kvp in connections[connectionNumb])
             {
@@ -241,9 +255,11 @@ namespace Control_Node
             }
             if (confirmations == 0 )
             {
-                if ((subnetworkNumber.Equals("10") || subnetworkNumber.Equals("11")) && czyBreak == true)
+                if (((subnetworkNumber == 10 || subnetworkNumber == 11) && czyBreak == true))
                 {
-                    ConnectionRequest(connectionsSNPPs[connectionNumber], connectionNumber);
+                    //ConnectionRequest(connectionsSNPPs[connectionNumber], connectionNumber);
+                    RouteTableQuery(connectionsSNPPs[connectionNumber], connectionNumber);
+                    czyBreak = false;
                 }
                 else
                     DisconnectionConfirmation(connectionNumber);

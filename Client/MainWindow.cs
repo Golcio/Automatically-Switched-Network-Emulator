@@ -34,8 +34,6 @@ namespace ClientTSST8
         private Button button5;
         private Label label7;
         private Label label8;
-        private Label label9;
-        private TextBox textBox2;
         private TextBox textBox3;
         private Label label10;
         Thread senderThread;
@@ -100,8 +98,6 @@ namespace ClientTSST8
             this.button5 = new System.Windows.Forms.Button();
             this.label7 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
-            this.label9 = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.SuspendLayout();
@@ -110,7 +106,6 @@ namespace ClientTSST8
             // 
             this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Items.AddRange(new object[] { });
             this.comboBox1.Location = new System.Drawing.Point(19, 29);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(200, 24);
@@ -265,22 +260,6 @@ namespace ClientTSST8
             this.label8.TabIndex = 16;
             this.label8.Text = "brak połączenia";
             // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(16, 210);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(81, 17);
-            this.label9.TabIndex = 17;
-            this.label9.Text = "Wiadomość";
-            // 
-            // textBox2
-            // 
-            this.textBox2.Location = new System.Drawing.Point(19, 230);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(195, 22);
-            this.textBox2.TabIndex = 18;
-            // 
             // textBox3
             // 
             this.textBox3.Location = new System.Drawing.Point(19, 76);
@@ -302,8 +281,6 @@ namespace ClientTSST8
             this.ClientSize = new System.Drawing.Size(646, 443);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
             this.Controls.Add(this.label7);
             this.Controls.Add(this.button5);
@@ -443,6 +420,23 @@ namespace ClientTSST8
                 };
                 this.Invoke(inv);
             }
+        }
+
+        public void writeToConsole(string text)
+        {
+            string text2 = text + ".\n";
+            MethodInvoker inv = delegate
+            {
+                this.comboBox1.Enabled = false;
+                this.textBox3.Enabled = false;
+                this.button4.Enabled = false;
+                this.button5.Enabled = true;
+                this.button1.Enabled = true;
+                this.label8.Text = connectedID;
+                this.richTextBox1.SelectedText += text;
+                this.richTextBox1.ScrollToCaret();
+            };
+            this.Invoke(inv);
         }
     }
 }

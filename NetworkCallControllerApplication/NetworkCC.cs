@@ -67,7 +67,7 @@ namespace NetworkCallControllerApplication
 
                     //Tlumaczenie ClientA na C1 itd. i wpisywanie do tablicy, zeby wrzucic je do slownika z numerami polaczen
                     string[] addressesArray = null;
-                    if (!splitArray[0].Equals("ConnectionConfirmation"))
+                    if (!splitArray[0].Equals("ConnectionConfirmation") && !splitArray[0].Equals("DisconnectionConfirmation"))
                     {
                         addressesArray = DirectoryRequest(splitArray[1], splitArray[2]);
                         source_address = addressesArray[0];
@@ -151,11 +151,6 @@ namespace NetworkCallControllerApplication
                                 connectionToRemove = number;
                             }
                         }
-                        if (connectionToRemove != null)
-                        {
-                            connectionsIDs.Remove(connectionToRemove);
-                            capacities.Remove(connectionToRemove);
-                        }
                         ConnectionTeardown(ccport, connectionToRemove);
                     }
                     else if (splitArray[0].Equals("NetworkCallCoordinationOUT"))
@@ -185,10 +180,20 @@ namespace NetworkCallControllerApplication
                         CallConfirmed(clientIDToClientName(connectionsIDs[connectionNumber][1]), 
                             "YES", PortTranslation(connectionsIDs[connectionNumber][0]));
                     }
-                    else if (splitArray[0].Equals("Disconnection"))
+                    else if (splitArray[0].Equals("DisconnectionConfirmation"))
                     {
-                        //string[] splitArray2 = splitArray[1].Split('*');
-                        //string connectionNumber = splitArray2[1];
+                        string[] splitArray2 = splitArray[1].Split('*');
+                        string connectionNumber = splitArray2[1];
+                        string[] st1 = connectionsIDs[connectionNumber];
+                        string[] st2 = DirectoryRequest(clientIDToClientName(st1[0]), clientIDToClientName(st1[1]));
+                        string port = null;
+                        if (AS1_ports.ContainsKey(st2[0]))
+                            port = AS1_ports[st2[0]];
+                        else if (AS2_ports.ContainsKey(st2[0]))
+                            port = AS2_ports[st2[0]];
+                        CallTeardown(clientIDToClientName(st1[1]), port);
+                        connectionsIDs.Remove(connectionNumber);
+                        capacities.Remove(connectionNumber);
                     }
 
                 }
@@ -276,6 +281,14 @@ namespace NetworkCallControllerApplication
             messagesb.Append("Disconnection_ *" + connection_number);
             string message = messagesb.ToString();
             Send(message, ccport);
+        }
+        public void CallTeardown(string destination, string destinationport)
+        {
+            StringBuilder messagesb = new StringBuilder();
+            messagesb.Append("Disconnected_" + destination);
+            string message = messagesb.ToString();
+
+            Send(message, destinationport);
         }
         public static void WriteLine(String text)
         {
