@@ -50,16 +50,16 @@ namespace NetworkCallControllerApplication
                 nccID = "1";
                 inputport = "14051";
                 ccport = "16001";
-                Console.WriteLine("NCC" + nccID);
-                Console.WriteLine("Port na którym słucha NCC to: " + inputport);
+                //Console.WriteLine("NCC" + nccID);
+                //Console.WriteLine("Port na którym słucha NCC to: " + inputport);
             }
             else
             {
                 nccID = "2";
                 inputport = "14052";
                 ccport = "16003";
-                Console.WriteLine("NCC" + nccID);
-                Console.WriteLine("Port na którym słucha NCC to: " + inputport);
+                //Console.WriteLine("NCC" + nccID);
+                //Console.WriteLine("Port na którym słucha NCC to: " + inputport);
             }
             ncc = new NetworkCC(nccID, inputport, ccport);
         }

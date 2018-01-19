@@ -3,7 +3,7 @@ CC
 PartnerPort
 16001
 ParentPort
-17001
+14052
 ConnectionControllers
 controler6_14106
 controler7_14107
