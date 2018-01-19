@@ -183,21 +183,28 @@ namespace Router
         //R3.S1/1,R4.S1/3
         private static void LinkConnection(string port1, string label1, string port2, string label2, List<String[]> switchTables, string connectionid)
         {
-            string[] switchtablerow = { port1, label1, port2, label2, connectionid};
+            string[] switchtablerow = { port1, label1, port2, label2, connectionid };
             switchTables.Add(switchtablerow);
             Router.RouterMain.WriteLine(switchTables[switchTables.Count - 1][0] + "_" + switchTables[switchTables.Count - 1][1] + "_" + switchTables[switchTables.Count - 1][2] + "_" + switchTables[switchTables.Count - 1][3] + "_" + switchTables[switchTables.Count - 1][4]);
 
         }
         private static void LinkConnectionDeallocation(List<String[]> switchTables, string connectionid)
         {
-            foreach(string[] line in switchTables)
+            int counter = 0;
+            foreach (string[] line in switchTables)
             {
-                if(line[4].Equals(connectionid))
+                if (line[4].Equals(connectionid))
                 {
                     switchTables.Remove(line);
+                    Send("LinkConnectionDeallocationConfirm_ *" + connectionid, ccport);
+                    counter++;
                 }
             }
-            Send("LinkConnectionDeallocationConfirm_" + connectionid, ccport);
+            
+            if(counter == 0)
+            {
+                Send("LinkConnectionDeallocationDenied_ *" + connectionid, ccport);
+            }
         }
 
         private static void Send(string message, string port)
