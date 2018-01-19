@@ -116,7 +116,7 @@ namespace Control_Node
                             break;
                         case "PeerCoordination":
                             WriteLine("Otrzymano PeerCoordination.");
-                            RouteQuery(restMessage, connectionORportNumber);
+                            RouteQueryAfterPeer(restMessage, connectionORportNumber);
                             break;
                         case "ConnectionConfirmation":
                             WriteLine("Otrzymano ConnectionConfirmation.");
@@ -173,6 +173,33 @@ namespace Control_Node
                     IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), RCPort);
                     client.Connect(point);
                     string message = "RouteQuery_" + routeQuery + "*" + connectionNumber;
+                    client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
+                }
+            }
+            catch (Exception e)
+            {
+
+            }
+
+        }
+        void RouteQueryAfterPeer(string routeQuery, string connectionNumber)
+        {
+            try
+            {
+                string capacityString =" ";
+                foreach (KeyValuePair<string, string> kvpCC in capacity)
+                {
+                    if (connectionNumber.Equals(kvpCC.Key))
+                        capacityString = kvpCC.Value;
+                }
+                if (routeQuery == "NOPATH")
+                    WriteRedLine("Nie można zestawić takiego połączenia.");
+                else
+                {
+                    var client = new UdpClient();
+                    IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), RCPort);
+                    client.Connect(point);
+                    string message = "RouteQuery_" + routeQuery + "," + capacityString + "*" + connectionNumber;
                     client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
                 }
             }
