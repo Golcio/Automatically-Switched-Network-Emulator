@@ -29,8 +29,16 @@ namespace Router
         static List<string> labelpool = new List<string>();
         static void Main(string[] args)
         {
-            WriteMenu();
-            Console.ReadKey();
+            if (args != null)
+            {
+                routernumber = Int32.Parse(args[0]);
+                StartRouter();
+            }
+            else
+            {
+                WriteMenu();
+                Console.ReadKey();
+            }
         }
 
         public static void WriteMenu()
@@ -79,7 +87,7 @@ namespace Router
 
                 sender.senderThread(packetQueue);
                 receiver.socketReceive(packetQueue, switchTables);
-                
+
             }
             catch (SocketException ex)
             {

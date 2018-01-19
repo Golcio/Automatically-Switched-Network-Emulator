@@ -20,11 +20,19 @@ namespace Control_Node
         static Dictionary<String, int> controllers = new Dictionary<String, int>();
         static int ccportINT;
         static int rcportINT;
-        
+
         static void Main(string[] args)
         {
-            WriteMenu();
-            Console.ReadKey();
+            if (args != null)
+            {
+                subnetworknumber = Int32.Parse(args[0]);
+                Start();
+            }
+            else
+            {
+                WriteMenu();
+                Console.ReadKey();
+            }
         }
 
         public static void WriteMenu()
@@ -56,7 +64,7 @@ namespace Control_Node
         {
             Console.Title = "Control Node " + subnetworknumber;
             routingController = new RoutingController(subnetworknumber.ToString());
-            new ControlParser("controlconfig" + subnetworknumber + ".txt", subnetworknumber, ref ccport, ref rcport, controllers, routingController, ref partnerPort, ref parentPort);           
+            new ControlParser("controlconfig" + subnetworknumber + ".txt", subnetworknumber, ref ccport, ref rcport, controllers, routingController, ref partnerPort, ref parentPort);
             Thread connectioncontrollerthread = new Thread(() => ConnectionController());
             Thread routingcontrollerthread = new Thread(() => RoutingController());
             connectioncontrollerthread.Start();
