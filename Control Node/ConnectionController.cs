@@ -153,7 +153,7 @@ namespace Control_Node
 
         void BreakConnectionReact(string restMessage, string connectionNumber)
         {
-            string subnetworkNumber = restMessage;
+            //string subnetworkNumber = restMessage;
             if (subnetworkNumber.Equals("10") || subnetworkNumber.Equals("11"))
             {
                 WriteLine("Rozpoczęto procedurę zwalniania połączenia numer " + connectionNumber);
@@ -164,10 +164,10 @@ namespace Control_Node
                 var client = new UdpClient();
                 IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), parentPort);
                 client.Connect(point);
-                string message = "BreakConnection_" + subnetworkNumber + "*" + connectionNumber;
+                string message = "BreakConnection_" + restMessage + "*" + connectionNumber;
                 client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
                 //var receivedData = client.Receive(ref point);
-                WriteLine("Wysłano alert o zerwanym połączeniu numer " + connectionNumber + " w podsieci numer " + subnetworkNumber);
+                WriteLine("Wysłano alert o zerwanym połączeniu numer " + connectionNumber + " w podsieci numer " + restMessage);
             }
             
         }
