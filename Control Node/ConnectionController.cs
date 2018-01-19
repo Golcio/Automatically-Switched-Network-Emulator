@@ -129,11 +129,18 @@ namespace Control_Node
 
         void ConfirmationsController(string restMessage, string connectionNumber)
         {
-            string subnetworkNumber = restMessage.Split(':')[0];
+            string subnetworkNumber = restMessage;
             Int32.TryParse(connectionNumber, out int connectionNumb);
             connections[connectionNumb][subnetworkNumber] = true;
             WriteLine("Otrzymano potwierdzenie zestawienia połączenia numer " + connectionNumber + " od CC w podsieci numer " + subnetworkNumber);
-            ConectionConfirmation(connectionNumber);
+            int confirmations = 0;
+            foreach (KeyValuePair<string, bool> kvp in connections[connectionNumb])
+            {
+                if (kvp.Value == true)
+                    confirmations++;
+            }
+            if (confirmations == connections[connectionNumb].Count)
+                ConectionConfirmation(connectionNumber);
         }
 
         void ConectionConfirmation(string connectionNumber)
