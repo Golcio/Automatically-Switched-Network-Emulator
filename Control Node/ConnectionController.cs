@@ -29,7 +29,7 @@ namespace Control_Node
         Dictionary<string, string> connectionsSNPPs = new Dictionary<string, string>(); 
         Dictionary<string, string> capacity = new Dictionary<string, string>();
         Dictionary<string, string> confirmations = new Dictionary<string, string>();
-
+        bool czyBreak = false;
         public ConnectionController(int udpListenPort, int subnetworkNumber, int RCPort, int partnerPort, int parentPort)
         {
             this.udpListenPort = udpListenPort;
@@ -132,6 +132,7 @@ namespace Control_Node
                             break;
                         case "BreakConnection":
                             //idzie z dołu
+                            czyBreak = true;
                             WriteRedLine("Wyjebało nam połączenie nr " + connectionORportNumber);
                             BreakConnectionReact(restMessage, connectionORportNumber);
                             break;
@@ -240,7 +241,7 @@ namespace Control_Node
             }
             if (confirmations == 0 )
             {
-                if (subnetworkNumber.Equals("10") || subnetworkNumber.Equals("11"))
+                if ((subnetworkNumber.Equals("10") || subnetworkNumber.Equals("11")) && czyBreak == true)
                 {
                     ConnectionRequest(connectionsSNPPs[connectionNumber], connectionNumber);
                 }
