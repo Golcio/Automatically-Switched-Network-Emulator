@@ -188,7 +188,7 @@ namespace Control_Node
                                 var client = new UdpClient();
                                 IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
                                 client.Connect(point);
-                                string message = "Disconnection" + " " + "*" + connectionNumber;
+                                string message = "Disconnection_" + " " + "*" + connectionNumber;
                                 client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
                             }
                         }
@@ -200,7 +200,7 @@ namespace Control_Node
                                 var client = new UdpClient();
                                 IPEndPoint point = new IPEndPoint(IPAddress.Parse("127.0.0.1"), port);
                                 client.Connect(point);
-                                string message = "Disconnection" + " " + "*" + connectionNumber;
+                                string message = "Disconnection_" + " " + "*" + connectionNumber;
                                 client.Send(Encoding.UTF8.GetBytes(message), Encoding.UTF8.GetBytes(message).Length);
                             }
                         }
