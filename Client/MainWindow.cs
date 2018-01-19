@@ -43,6 +43,7 @@ namespace ClientTSST8
         public bool connected = false;
         public string connectedID = null;
         public string myName = null;
+        private Label label9;
         public string nccport = null;
 
         public MainWindow(Sender sender, Reader reader, string cpccinput, string nccport, string myid)
@@ -100,6 +101,7 @@ namespace ClientTSST8
             this.label8 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // comboBox1
@@ -264,7 +266,7 @@ namespace ClientTSST8
             // 
             this.textBox3.Location = new System.Drawing.Point(19, 76);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(200, 22);
+            this.textBox3.Size = new System.Drawing.Size(152, 22);
             this.textBox3.TabIndex = 19;
             // 
             // label10
@@ -276,9 +278,19 @@ namespace ClientTSST8
             this.label10.TabIndex = 20;
             this.label10.Text = "Wymagana przepustowość";
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(177, 79);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(42, 17);
+            this.label9.TabIndex = 21;
+            this.label9.Text = "Mbps";
+            // 
             // MainWindow
             // 
             this.ClientSize = new System.Drawing.Size(646, 443);
+            this.Controls.Add(this.label9);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.textBox3);
             this.Controls.Add(this.label8);
