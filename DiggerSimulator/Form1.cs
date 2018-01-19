@@ -45,7 +45,7 @@ namespace DiggerSimulator
                     receive_byte_array = listener.Receive(ref groupEP);
                     received_data = Encoding.ASCII.GetString(receive_byte_array, 0, receive_byte_array.Length);
                     string[] splitArray = received_data.Split('_');
-                    if (splitArray[0].Equals("ConnectionBroken"))
+                    if (splitArray[0].Equals("BreakConnection"))
                     {
                         string[] connection = new string[2];
                         connection[0] = splitArray[1];
