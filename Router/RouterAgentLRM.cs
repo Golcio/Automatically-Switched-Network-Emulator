@@ -122,7 +122,7 @@ namespace Router
                         label2 = null;
                         port1 = null;
                         port2 = null;
-                        Send("LinkConnectionRequestConfirm_" + SNPPs + "*" + connectionid, ccport);
+                        Send("LinkConnectionRequestConfirm_" + routernumber + "*" + connectionid, ccport);
                         Router.RouterMain.WriteLine("LRM: Zestawiono połączenie nr " + connectionid);
                     }
                 }
