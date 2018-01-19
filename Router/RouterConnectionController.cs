@@ -65,10 +65,11 @@ namespace Router
                     switch (messageType)
                     {
                         case "ConnectionRequest":
-                            WriteLine("Otrzymano ConnectionRequest.");
+                            WriteLine("Otrzymano ConnectionRequest o numerze połączenia: " + connectionORportNumber + ".");
                             LinkConnectionRequest(restMessage, connectionORportNumber);
                             break;
                         case "LinkConnectionRequestConfirm":
+                            WriteLine("Otrzymano od LRM ConnectionConfirmation połączenia o numerze: " + connectionORportNumber + ".");
                             ConnectionConfirmation(restMessage, connectionORportNumber);
                             break;
                     }
