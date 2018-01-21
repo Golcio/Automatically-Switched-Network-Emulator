@@ -123,7 +123,7 @@ namespace Control_Node
                             RouteTableQuery(restMessage, connectionORportNumber);
                             break;
                         case "RouteTableQuery":
-                            WriteLine("Otrzymano RouteQuery.");
+                            WriteLine("Otrzymano RouteQuery o treści: " + message + ".");
                             //restMessage: numerPodsieci:punkt1,punkt2;numerPodsieci2:punkt1,punkt2
                             ConnectionRequest(restMessage, connectionORportNumber);
                             break;
@@ -140,7 +140,7 @@ namespace Control_Node
                                 confirmations[connectionORportNumber] = "partner";
                             break;
                         case "ConnectionConfirmation":
-                            WriteLine("Otrzymano ConnectionConfirmation.");
+                            WriteLine("Otrzymano ConnectionConfirmation połączenia numer: " + connectionORportNumber + ".");
                             ConfirmationsController(restMessage, connectionORportNumber);
                             break;
                         case "BreakConnection":
