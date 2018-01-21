@@ -211,8 +211,8 @@ namespace Router
 
             if(removeline != null)
             {
-                switchTables.Remove(removeline);
                 Router.RouterMain.WriteLine("LRM: Usunięto wpis z tablicy: " + removeline);
+                switchTables.Remove(removeline);
             }
             
             if(counter == 0)
