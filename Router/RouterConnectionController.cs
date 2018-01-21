@@ -65,7 +65,7 @@ namespace Router
                     switch (messageType)
                     {
                         case "ConnectionRequest":
-                            WriteLine("Otrzymano ConnectionRequest o numerze połączenia: " + connectionORportNumber + ".");
+                            WriteLine("Otrzymano ConnectionRequest o treści: " + message + ".");
                             LinkConnectionRequest(restMessage, connectionORportNumber);
                             break;
                         case "LinkConnectionRequestConfirm":

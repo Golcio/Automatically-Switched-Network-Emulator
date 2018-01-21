@@ -108,7 +108,7 @@ namespace Control_Node
                             AddingPartners(restMessage, subnetworkNumber.ToString(), connectionORportNumber);
                             break;
                         case "ConnectionRequest":
-                            WriteLine("Otrzymano ConnectionRequest.");
+                            WriteLine("Otrzymano ConnectionRequest o treści : " + message + ".");
                             if (!connectionsSNPPs.ContainsKey(connectionORportNumber))
                                 connectionsSNPPs.Add(connectionORportNumber, restMessage);
                             if (!capacity.ContainsKey(connectionORportNumber))
