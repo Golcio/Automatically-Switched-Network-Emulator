@@ -108,7 +108,7 @@ namespace Control_Node
                             AddingPartners(restMessage, subnetworkNumber.ToString(), connectionORportNumber);
                             break;
                         case "ConnectionRequest":
-                            WriteLine("Otrzymano ConnectionRequest.");
+                            WriteLine("Otrzymano ConnectionRequest o treści : " + message + ".");
                             if (!connectionsSNPPs.ContainsKey(connectionORportNumber))
                                 connectionsSNPPs.Add(connectionORportNumber, restMessage);
                             if (!capacity.ContainsKey(connectionORportNumber))
@@ -123,7 +123,7 @@ namespace Control_Node
                             RouteTableQuery(restMessage, connectionORportNumber);
                             break;
                         case "RouteTableQuery":
-                            WriteLine("Otrzymano RouteTableQuery.");
+                            WriteLine("Otrzymano RouteQuery o treści: " + message + ".");
                             //restMessage: numerPodsieci:punkt1,punkt2;numerPodsieci2:punkt1,punkt2
                             ConnectionRequest(restMessage, connectionORportNumber);
                             break;
@@ -140,7 +140,7 @@ namespace Control_Node
                                 confirmations[connectionORportNumber] = "partner";
                             break;
                         case "ConnectionConfirmation":
-                            WriteLine("Otrzymano ConnectionConfirmation.");
+                            WriteLine("Otrzymano ConnectionConfirmation połączenia numer: " + connectionORportNumber + ".");
                             ConfirmationsController(restMessage, connectionORportNumber);
                             break;
                         case "BreakConnection":
