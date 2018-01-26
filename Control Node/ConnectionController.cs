@@ -123,7 +123,7 @@ namespace Control_Node
                             RouteTableQuery(restMessage, connectionORportNumber);
                             break;
                         case "RouteTableQuery":
-                            WriteLine("Otrzymano RouteQuery.");
+                            WriteLine("Otrzymano RouteTableQuery.");
                             //restMessage: numerPodsieci:punkt1,punkt2;numerPodsieci2:punkt1,punkt2
                             ConnectionRequest(restMessage, connectionORportNumber);
                             break;

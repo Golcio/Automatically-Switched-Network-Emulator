@@ -131,12 +131,22 @@ namespace NetworkCallControllerApplication
                             capacities.Add(connection_number, splitArray[3]);
                         }
 
+                        WriteLine("Policy: Sprawdzam uprawnienia dla " + clientIDToClientName(addressesArray[0]) + "...");
+                        WriteLine("Policy: Uprawnienia potwierdzone.");
+
                         if (AS2_ports.ContainsKey(source_address) & AS2_ports.ContainsKey(destination_address))
                         {
+                            WriteLine("Dictionary: " + clientIDToClientName(addressesArray[1]) + " znajduje się w AS 2.");
                             CallAccept(source_address, destination_address, splitArray[3], destination_port);
                         }
                         else
                         {
+                            string asid = null;
+                            if (nccID.Equals("NCC1"))
+                                asid = "AS 2";
+                            else
+                                asid = "AS 1";
+                            WriteLine("Dictionary: " + clientIDToClientName(addressesArray[1]) + " znajduje się w domenie " + asid + " i ma adres " + addressesArray[1]);
                             NetworkCallCoordinationOUT(source_address, destination_address, splitArray[3], nccport);
                         }
                     }
